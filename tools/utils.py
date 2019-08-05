@@ -1,4 +1,4 @@
-import json,os,sys
+import json, os, sys
 
 import pandas as pd
 
@@ -7,13 +7,14 @@ from xml.dom import minidom
 from json import load
 from pandas.io.json import json_normalize
 
-## Functions are in alphabetical order, because lazy! ##
+
+# Functions are in alphabetical order, because lazy! ##
 def load_groupfile(infile_path):
     """ Load your MRIQC group tsv file and return a pandas df to then 
         use for visualizations or any other functions down the line.
     
     Args:
-        tsv_file_path (string): Path to your MRIQC tsv that you got 
+        infile_path (string): Path to your MRIQC tsv that you got
         from running MRIQC on your LOCAL group. However, this can
         be used to load any other downloaded/shared tsv for future 
         integration
@@ -27,8 +28,10 @@ def load_groupfile(infile_path):
         sep = "'\t'"
     elif ext == '.csv':
         sep = "','"
+    else:
+        raise ValueError("File type not supported: " + ext)
 
-    df = pd.read_csv(infile_path,sep=sep,engine='python')
+    df = pd.read_csv(infile_path, sep=sep, engine='python')
     print(df.head())
 
     return df
@@ -47,17 +50,18 @@ def query_api(stype, *args):
         contitional statement (keyword condition value).
     """
     url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + stype
-    print('Search currently slow. Running through approximately 12k possible pages...')
-    print('Checking %d search phrases'%len(args))
+    print('Search currently slow. Running through approximately '
+          '12k possible pages...')
+    print('Checking %d search phrases' % len(args))
 
     # complex search line working?
     # https://mriqc.nimh.nih.gov/api/v1/bold?max_results=1000&where=bids_meta.MultibandAccelerationFactor%3C8&RepetitionTime=0.72&page=3
-    ## looks like API limits at a max results of 1k
+    # looks like API limits at a max results of 1k
 
     dfs = []
     for phrase in args:
         try:
-            del(last_page)
+            del last_page
         except:
             pass
 
@@ -68,13 +72,13 @@ def query_api(stype, *args):
             if page == 0:
                 pass
             else:
-                if page%10 == 0:
-                    print('On page %d'%page + '...')
+                if page % 10 == 0:
+                    print('On page %d' % page + '...')
                 else:
                     pass
 
             ### CHANGE THIS TO OPENING A LOCAL API DUMP IN THE FUTURE ##
-            page_url = url_root + '?max_results=1000&where=bids_meta.' + phrase + '&page=%d'%page
+            page_url = url_root + '?max_results=1000&where=bids_meta.' + phrase + '&page=%d' % page
             # print(page_url)
             with urlopen(page_url) as url:
                 data = json.loads(url.read().decode())
@@ -82,7 +86,7 @@ def query_api(stype, *args):
                     last_page
                 except NameError:
                     last_page = data['_links']['last']['href'].split('=')[-1]
-                    print('Searching through %s pages...'%last_page)
+                    print('Searching through %s pages...' % last_page)
 
                 dfs.append(json_normalize(data['_items']))
                 if page == last_page:
@@ -105,8 +109,3 @@ def query_api(stype, *args):
     print(df_unique.head())
 
     return df_unique
-
-
-
-
-
