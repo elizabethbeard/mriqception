@@ -1,6 +1,6 @@
 # MRIQCeption
 
-[Wiki](https://github.com/elizabethbeard/mriqception/wiki)
+See [Wiki](https://github.com/elizabethbeard/mriqception/wiki) for full documentation!
 
 Repository for doing QC on your group QC report using the MRIQC "global" data
 
