@@ -26,13 +26,12 @@ def load_groupfile(infile_path):
     name, ext = os.path.splitext(os.path.basename(infile_path))
     if ext == '.tsv':
         sep = "'\t'"
+        df = pd.read_table(infile_path, header=0)
     elif ext == '.csv':
         sep = "','"
+        df = pd.read_csv(infile_path, header=0)
     else:
         raise ValueError("File type not supported: " + ext)
-
-    df = pd.read_csv(infile_path, sep=sep, engine='python')
-    print(df.head())
 
     return df
 
