@@ -3,10 +3,12 @@
 Call this program with:
     -g full path to your group csv or tsv you want to compare to API data.)
     -t scan type (modality) to compare to: bold, T1w, or T2w)
-    -? filter/search phrase
-__authors__ = ['???','???',
-               '???','???']
-__version__ = '??'
+    -? filter/search phrase - argument in unknown format...
+__authors__ = [Elizabeth C. Beard, Stephanie Rossi Chen,Stephanie N. DeCross,
+               Damion V. Demeter, Sofía Fernández-Lozano, Chris Foulon,
+               Helena M. Gellersen, Estée Rubien-Thomas, Saren H. Seeley,
+               Catherine R. Walsh]
+__version__ = '0.01'
 __maintainer__ = '??'
 __email__ = '??@??.edu'
 __status__ = 'pre-alpha'
@@ -40,6 +42,11 @@ def main(argv=sys.argv):
                                   'the output from MRIQC.'),
                             dest='group_file'
                             )
+    arg_parser.add_argument('-s', metavar='SEARCH_PHRASE', action='store', type=str,
+                            required=True, help=('Search phrase to filter API query.'
+                                                 'Format: xxxx xxxxx xxxxxx xxxxxx'),
+                            dest='search_phrase'
+                            )
     arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str,
                             choices=['bold', 'T1w', 'T2w'], required=False,
                             default='T1w',
@@ -49,12 +56,14 @@ def main(argv=sys.argv):
                             )
     args = arg_parser.parse_args()
 
-
     #################################################
     ## Script Argument Verification and Assignment ##
     #################################################
-
-
+    if os.path.isfile(args.group_file):
+        pass
+    else:
+        print('The groupfile you are trying to use was not found. Exiting...')
+        sys.exit()
 
     #################################################
     ##          Global Variable Assignment         ##
@@ -77,8 +86,6 @@ def main(argv=sys.argv):
     ## Scater plot/visualization functions would go below here and pass result_df as well as loaded_df pandas dataframes
     # something like this:
     # scatter(loaded_df, result_df)
-
-
 
 
     full_runtime = time.time() - start_time
