@@ -42,7 +42,7 @@ def query_api(stype, filters):
     
     Args:
         stype (string): Scan type. Supported: 'bold','T1w',or 'T2w'.
-        args (list): List of conditional phrases consisting of: 
+        filters (list): List of conditional phrases consisting of:
             keyword to query + conditional argument + value. All
             conditions checked against API as and phrases.
 
