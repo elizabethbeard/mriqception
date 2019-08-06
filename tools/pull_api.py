@@ -93,5 +93,29 @@ def backend_query_api(stype, filters):
     return df_unique
 
 
-def pull_one_page(stype, page_number=None):
-    url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + stype
+def pull_one_page(modality, page_number=0, max_page_results=1000):
+    url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + modality
+    page = '&page={}'.format(page_number)
+    max_results = '?max_results={}'.format(max_page_results)
+
+    page_url = url_root + max_results + page
+    print(page_url)
+    dfs = []
+    with urlopen(page_url) as url:
+        data = json.loads(url.read().decode())
+        # only gathers image information
+        df = json_normalize(data['_items'])
+        '''
+        In[29]: data.keys()
+        Out[29]: dict_keys(['_items', '_links', '_meta'])
+        data['_items'] is a list of dictionaries
+        
+        In[30]: data['_links'].keys()
+        Out[30]: dict_keys(['parent', 'self', 'next', 'last', 'prev'])
+        
+        In [31]: data['_meta'].keys()
+        Out[31]: dict_keys(['page', 'max_results', 'total'])
+        '''
+    # print(type(data))
+    # print(str(data))
+    return df
