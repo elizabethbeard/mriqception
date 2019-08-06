@@ -27,19 +27,26 @@ A utility for doing QC, on your group QC report, using the MRIQC "global" data. 
 during Neurohackademy, 2019.
 """ % {'prog': PROG}
 
+
 def main(argv=sys.argv):
     arg_parser = argparse.ArgumentParser(description=prog_desc,
-                                         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                                         formatter_class=
+                                         argparse.ArgumentDefaultsHelpFormatter)
     # Check for arguments. #
-    if len(sys.argv[1:])==0:
+    if len(sys.argv[1:]) == 0:
         print('\nArguments required. Use -h option to print FULL usage.\n')
 
-    arg_parser.add_argument('-g', metavar='GROUP_FILE', action='store', type=os.path.abspath, required=True,
-                            help=('FULL path to your group csv/tsv file - the output from MRIQC.'),
+    arg_parser.add_argument('-g', metavar='GROUP_FILE', action='store',
+                            type=os.path.abspath, required=True,
+                            help=('FULL path to your group csv/tsv file - '
+                                  'the output from MRIQC.'),
                             dest='group_file'
                             )
-    arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str, choices=['bold','T1w','T2w'], required=False, default='T1w',
-                            help=('Scan type to query. Can choose from bold, T1w, or T2w.'),
+    arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str,
+                            choices=['bold', 'T1w', 'T2w'], required=False,
+                            default='T1w',
+                            help=('Scan type to query. Can choose from bold,'
+                                  ' T1w, or T2w.'),
                             dest='scan_type'
                             )
     args = arg_parser.parse_args()
@@ -54,7 +61,7 @@ def main(argv=sys.argv):
     #################################################
     ##          Global Variable Assignment         ##
     #################################################    
-    start_time=time.time()
+    start_time = time.time()
     time.sleep(1)
     today_date = datetime.datetime.now().strftime('%m%d%Y')
 
@@ -66,7 +73,8 @@ def main(argv=sys.argv):
     loaded_df = load_groupfile(args.group_file)
 
     # result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3','RepetitionTime>1')
-    result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3')
+    # result_df = query_api(args.scan_type, ['MultibandAccelerationFactor>3', 'EchoTime>1'])
+    result_df = query_api(args.scan_type, 'MultibandAccelerationFactor>3&EchoTime>1')
     print(result_df)
 
     ## Scater plot/visualization functions would go below here and pass result_df as well as loaded_df pandas dataframes
