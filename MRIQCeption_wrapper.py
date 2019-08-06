@@ -78,7 +78,7 @@ def main(argv=sys.argv):
 
     # result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3','RepetitionTime>1')
     # result_df = query_api(args.scan_type, ['MultibandAccelerationFactor>3', 'EchoTime>1'])
-    result_df = query_api(args.scan_type, 'MultibandAccelerationFactor>3&EchoTime>1')
+    result_df = query_api(args.scan_type, 'MultibandAccelerationFactor>3')
     print(result_df)
 
     ## Scater plot/visualization functions would go below here and pass result_df as well as loaded_df pandas dataframes

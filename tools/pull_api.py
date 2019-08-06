@@ -1,52 +1,21 @@
-import json, os, sys
+import json
 
 import pandas as pd
 
 from urllib.request import urlopen
-from xml.dom import minidom
-from json import load
 from pandas.io.json import json_normalize
 
 
-# Functions are in alphabetical order, because lazy! ##
-def load_groupfile(infile_path):
-    """ Load your MRIQC group tsv file and return a pandas df to then 
-        use for visualizations or any other functions down the line.
-    
-    Args:
-        infile_path (string): Path to your MRIQC tsv that you got
-        from running MRIQC on your LOCAL group. However, this can
-        be used to load any other downloaded/shared tsv for future 
-        integration
-
-    Returns: A pandas dataframe of your tsv file that was output by
-        MRIQC. (This can also be tsv files shared or downloaded, such 
-        as the ABIDE example tsv available online).
-    """
-    name, ext = os.path.splitext(os.path.basename(infile_path))
-    if ext == '.tsv':
-        sep = "'\t'"
-    elif ext == '.csv':
-        sep = "','"
-    else:
-        raise ValueError("File type not supported: " + ext)
-
-    df = pd.read_csv(infile_path, sep=sep, engine='python')
-    print(df.head())
-
-    return df
-
-
-def query_api(stype, filters):
+def backend_query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.
-    
+
     Args:
         stype (string): Scan type. Supported: 'bold','T1w',or 'T2w'.
         filters (list): List of conditional phrases consisting of:
             keyword to query + conditional argument + value. All
             conditions checked against API as and phrases.
 
-    Returns: A pandas dataframe of all MRIQC entries that satisfy the 
+    Returns: A pandas dataframe of all MRIQC entries that satisfy the
         contitional statement (keyword condition value).
     """
     url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + stype
@@ -122,3 +91,7 @@ def query_api(stype, filters):
     print(df_unique.head())
 
     return df_unique
+
+
+def pull_one_page(stype, page_number=None):
+    url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + stype
