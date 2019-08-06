@@ -28,6 +28,7 @@ A utility for doing QC, on your group QC report, using the MRIQC "global" data. 
 during Neurohackademy, 2019.
 """ % {'prog': PROG}
 
+
 def main(argv=sys.argv):
     arg_parser = argparse.ArgumentParser(description=prog_desc,
                                          formatter_class=
