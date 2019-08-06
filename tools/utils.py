@@ -28,8 +28,7 @@ def load_groupfile(infile_path):
     elif ext == '.csv':
         sep = "','"
 
-    df = pd.read_csv(infile_path,sep=sep,engine='python')
-    print(df.head())
+    df = pd.read_csv(infile_path,sep=sep)
 
     return df
 
@@ -51,7 +50,7 @@ def query_api(stype, *args):
     print('Checking %d search phrases'%len(args))
 
     # complex search line working?
-    # https://mriqc.nimh.nih.gov/api/v1/bold?max_results=1000&where=bids_meta.MultibandAccelerationFactor%3C8&RepetitionTime=0.72&page=3
+    # https://mriqc.nimh.nih.gov/api/v1/bold?max_results=1000&where=bids_meta.MultibandAccelerationFactor>3&RepetitionTime=0.72&page=3
     ## looks like API limits at a max results of 1k
 
     dfs = []
@@ -75,7 +74,7 @@ def query_api(stype, *args):
 
             ### CHANGE THIS TO OPENING A LOCAL API DUMP IN THE FUTURE ##
             page_url = url_root + '?max_results=1000&where=bids_meta.' + phrase + '&page=%d'%page
-            # print(page_url)
+            print(page_url)
             with urlopen(page_url) as url:
                 data = json.loads(url.read().decode())
                 try:
@@ -88,7 +87,7 @@ def query_api(stype, *args):
                 if page == last_page:
                     break
                 ## TEMPORARY BREAK FOR HACKADEMY TESTING ##
-                elif page == 15:
+                elif page == 3:
                     break
                 else:
                     page += 1

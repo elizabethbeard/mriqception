@@ -63,7 +63,11 @@ def main(argv=sys.argv):
     ## GROUP FILE COULD TURN INTO A LIST OF FILES!!! Just need a way to keep track and name them...perhaps turn it into a tuple 
     ## of (name,path) or maybe even a key: val?
     ## Check that this dataframe is the same format as the result_df output from the query_api function!!
-    loaded_df = load_groupfile(args.group_file)
+    # loaded_df = load_groupfile(args.group_file)
+    # print(type(loaded_df))
+    # print(loaded_df.columns.tolist())
+    # print(loaded_df.shape)
+    # sys.exit()
 
     # result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3','RepetitionTime>1')
     result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3')
