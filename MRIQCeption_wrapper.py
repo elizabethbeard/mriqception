@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 """
 Call this program with:
-    -u full path to the root of the directory containing unprocessed files (root = parent of sub-<subject_id>)
-    -p full path to the root of the directory containing derivatives (root = parent of sub-<subject_id>)
-    -s subject - id without sub- prefix
-    -e executive summary directory (e.g., summary_DCANBOLDProc_v4.0.0)
+    -g full path to your group csv or tsv you want to compare to API data.)
+    -t scan type (modality) to compare to: bold, T1w, or T2w)
+    -? filter/search phrase
 __authors__ = ['???','???',
                '???','???']
 __version__ = '??'
@@ -26,7 +25,6 @@ prog_desc = """%(prog)s:
 A utility for doing QC, on your group QC report, using the MRIQC "global" data. Originally written \
 during Neurohackademy, 2019.
 """ % {'prog': PROG}
-
 
 def main(argv=sys.argv):
     arg_parser = argparse.ArgumentParser(description=prog_desc,
@@ -71,32 +69,14 @@ def main(argv=sys.argv):
     ## of (name,path) or maybe even a key: val?
     ## Check that this dataframe is the same format as the result_df output from the query_api function!!
     loaded_df = load_groupfile(args.group_file)
-    print(type(loaded_df))
-    print(loaded_df.columns.tolist())
-    print(loaded_df.shape)
-    sys.exit()
 
     # result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3','RepetitionTime>1')
     # result_df = query_api(args.scan_type, ['MultibandAccelerationFactor>3', 'EchoTime>1'])
     result_df = query_api(args.scan_type, 'MultibandAccelerationFactor>3&EchoTime>1')
-    print(result_df)
 
     ## Scater plot/visualization functions would go below here and pass result_df as well as loaded_df pandas dataframes
     # something like this:
     # scatter(loaded_df, result_df)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
