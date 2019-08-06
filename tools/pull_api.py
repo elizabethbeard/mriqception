@@ -1,51 +1,21 @@
-import json, os, sys
+import json
 
 import pandas as pd
 
 from urllib.request import urlopen
-from xml.dom import minidom
-from json import load
 from pandas.io.json import json_normalize
 
 
-# Functions are in alphabetical order, because lazy! ##
-def load_groupfile(infile_path):
-    """ Load your MRIQC group tsv file and return a pandas df to then 
-        use for visualizations or any other functions down the line.
-    
-    Args:
-        infile_path (string): Path to your MRIQC tsv that you got
-        from running MRIQC on your LOCAL group. However, this can
-        be used to load any other downloaded/shared tsv for future 
-        integration
-
-    Returns: A pandas dataframe of your tsv file that was output by
-        MRIQC. (This can also be tsv files shared or downloaded, such 
-        as the ABIDE example tsv available online).
-    """
-    name, ext = os.path.splitext(os.path.basename(infile_path))
-    if ext == '.tsv':
-        sep = "'\t'"
-        df = pd.read_table(infile_path, header=0)
-    elif ext == '.csv':
-        sep = "','"
-        df = pd.read_csv(infile_path, header=0)
-    else:
-        raise ValueError("File type not supported: " + ext)
-
-    return df
-
-
-def query_api(stype, filters):
+def backend_query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.
-    
+
     Args:
         stype (string): Scan type. Supported: 'bold','T1w',or 'T2w'.
         filters (list): List of conditional phrases consisting of:
             keyword to query + conditional argument + value. All
             conditions checked against API as and phrases.
 
-    Returns: A pandas dataframe of all MRIQC entries that satisfy the 
+    Returns: A pandas dataframe of all MRIQC entries that satisfy the
         contitional statement (keyword condition value).
     """
     url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + stype
@@ -121,3 +91,31 @@ def query_api(stype, filters):
     print(df_unique.head())
 
     return df_unique
+
+
+def pull_one_page(modality, page_number=0, max_page_results=1000):
+    url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + modality
+    page = '&page={}'.format(page_number)
+    max_results = '?max_results={}'.format(max_page_results)
+
+    page_url = url_root + max_results + page
+    print(page_url)
+    dfs = []
+    with urlopen(page_url) as url:
+        data = json.loads(url.read().decode())
+        # only gathers image information
+        df = json_normalize(data['_items'])
+        '''
+        In[29]: data.keys()
+        Out[29]: dict_keys(['_items', '_links', '_meta'])
+        data['_items'] is a list of dictionaries
+        
+        In[30]: data['_links'].keys()
+        Out[30]: dict_keys(['parent', 'self', 'next', 'last', 'prev'])
+        
+        In [31]: data['_meta'].keys()
+        Out[31]: dict_keys(['page', 'max_results', 'total'])
+        '''
+    # print(type(data))
+    # print(str(data))
+    return df

@@ -1,0 +1,194 @@
+---
+title: "MRIQCeption"
+author: "Catherine Walsh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r import things}
+
+library(ggplot2)
+library(plotly)
+library(reshape)
+```
+
+
+```{r read in tsv from git}
+
+#read in test data from git 
+test_data <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/group_T1w.tsv',header=TRUE)
+test_data2 <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/group2_T1w.tsv',header=TRUE)
+
+```
+
+
+```{r select individual variable data and combine into one dataset}
+
+#put data in plot format 
+temp <- melt(test_data)
+temp <- temp[temp$variable=="fwhm_x",]
+temp$group <- "local_set"
+
+temp2 <- melt(test_data2)
+temp2 <- temp2[temp2$variable=="fwhm_x",]
+temp2$group <- "API"
+
+full_data <- rbind(temp,temp2)
+
+```
+
+```{r play around with plotting}
+
+#load in code from online to do half violin plot 
+source("~/Documents/Code/RainCloudPlots/tutorial_R/R_rainclouds.R")
+
+#first plot  - box plot with overlaid individual data points in same plot; interactive 
+test <- ggplot()+
+  geom_jitter(data=temp2,(aes(x=variable,y=value,text=paste('subject: ', bids_name))),alpha=0.3,position=position_jitter(0.05)) + # big dataset as jittered points
+  geom_jitter(data = temp,aes(x=variable,y=value,text=paste('subject: ', bids_name)),color="cyan",position=position_jitter(0.05)) + # new data as jittered points
+  geom_boxplot(data = temp,aes(x=variable,y=value)) # box plot of local data 
+#test
+
+#make graph interactive using plotly -- when you mouse over data point, will give value, subject ID
+# when you mouse over box plot, will give IQR, median, max/min, etc 
+test <- ggplotly(test)
+test
+
+#attempt to do rain cloud plot 
+# will only work if you've run the script to get geom_flat_violin from https://github.com/RainCloudPlots/RainCloudPlots
+p2 <- ggplot(full_data,aes(x=group,y=value,fill=group))+
+  geom_flat_violin(position=position_nudge(x = .2, y = 0),adjust =2)+
+  geom_point(position=position_jitter(width=.15),size=.25)+
+  geom_boxplot(aes(x=group,y=value),alpha=0.3,width=.1)
+
+# print out non-interactive rain cloud plot
+p2
+
+# make interactive - geom_flat_violin doesn't play well with plotly 
+# will just make two interactive box plots 
+test2 <- ggplotly(p2)
+test2
+
+# make violin plot with ggplot 
+v_plot <- ggplot(full_data,aes(x=group,y=value,fill=group))+
+  geom_violin(trim=FALSE)+
+  geom_point(position=position_jitter(width=.15),size=.25)
+  
+# make interactive -- mousing over data point gives the value and subject ID; don't get IQR informaion from violin plot 
+v_plot <-ggplotly(v_plot)
+v_plot
+
+
+```
+
+
+```{r make violin plot using plotly}
+
+# beginning of using plotly (as opposed to ggplot) to make violin plots
+# will allow for split half violin plots (ie local and API data directly in same plot)
+# also will allow for more interactive information in the violin plot
+# in process: adding in individual scatter points; making the split plots closer together 
+
+#re-assign data to work with example code copied from web 
+df <- full_data
+
+#load in the example data from online to compare how data looks 
+temp_df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/violin_data.csv")
+
+p <- df %>%
+  plot_ly(type = 'violin') %>%
+  add_trace( #put in first half of data - local 
+    x = ~group[df$group=="local_set"],
+    y = ~value[df$group=="local_set"],
+    legendgroup = 'Local Set',
+    scalegroup = 'Local Set',
+    name = 'Local Set',
+    side = 'negative',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = 'orange'
+    )
+  ) %>%
+  add_trace( #put in  second  half of data - API 
+     x = ~group[df$group=="API"],
+    y = ~value[df$group=="API"],
+    legendgroup = 'API',
+    scalegroup = 'API',
+    name = 'API',
+    side = 'positive',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = 'green'
+    )
+  ) %>% 
+  layout(
+    xaxis = list(
+      title = ""  
+    ),
+    yaxis = list(
+      title = "",
+      zeroline = F
+    ),
+    violingap = 0,
+    violingroupgap = 0,
+    violinmode = 'overlay'
+  )
+
+#view graph 
+p
+
+```
+
+```{r make steps - temp example code for slider from another tutorial}
+# 
+# steps <- list(
+#   list(args = list(""))
+# )
+# 
+# steps <- list(
+#   list(args = list("marker.color", "red"), 
+#                     label = "Red", 
+#                     method = "restyle", 
+#                     value = "1"
+#                     ),
+#   list(args = list("marker.color", "green"), 
+#                     label = "Green", 
+#                     method = "restyle", 
+#                     value = "2"
+#                     ),
+#   list(args = list("marker.color", "blue"), 
+#                     label = "Blue", 
+#                     method = "restyle", 
+#                     value = "3"
+#                     )
+#   )
+# 
+# p <- df %>%
+#   plot_ly(x = ~x, y = ~y,
+#           mode = "markers", 
+#           marker = list(size = 20,
+#                         color = 'green'), 
+#           type = "scatter") %>%
+#   layout(title = "Basic Slider",
+#          sliders = list(
+#            list(
+#              active = 1, 
+#              currentvalue = list(prefix = "Color: "), 
+#              pad = list(t = 60), 
+#              steps = steps))) 
+
+```
+
