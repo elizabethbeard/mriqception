@@ -7,7 +7,6 @@ from xml.dom import minidom
 from json import load
 from pandas.io.json import json_normalize
 
-
 # Functions are in alphabetical order, because lazy! ##
 def load_groupfile(infile_path):
     """ Load your MRIQC group tsv file and return a pandas df to then 
@@ -26,16 +25,14 @@ def load_groupfile(infile_path):
     name, ext = os.path.splitext(os.path.basename(infile_path))
     if ext == '.tsv':
         sep = "'\t'"
+        df = pd.read_table(infile_path, header=0)
     elif ext == '.csv':
         sep = "','"
+        df = pd.read_csv(infile_path, header=0)
     else:
         raise ValueError("File type not supported: " + ext)
 
-    df = pd.read_csv(infile_path, sep=sep, engine='python')
-    print(df.head())
-
     return df
-
 
 def query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.
@@ -103,6 +100,7 @@ def query_api(stype, filters):
                 break
             else:
                 page += 1
+
     print('Done searching!')
     print(len(dfs))
     # Concatenate all into pandas df
