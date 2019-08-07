@@ -1,5 +1,5 @@
 ---
-title: "MRIQCeption"
+title: "MRIQCeption Visualization"
 author: "Catherine Walsh"
 output: html_document
 ---
@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r import things}
 
 library(ggplot2)
+#install.packages('plotly')
 library(plotly)
 library(reshape)
 ```
@@ -18,7 +19,8 @@ library(reshape)
 
 ```{r read in tsv from git}
 
-#read in test data from git 
+# read in test data from git
+# change this file path depending on where you have your local git repository 
 test_data <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/group_T1w.tsv',header=TRUE)
 test_data2 <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/group2_T1w.tsv',header=TRUE)
 
@@ -27,7 +29,7 @@ test_data2 <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/
 
 ```{r select individual variable data and combine into one dataset}
 
-#put data in plot format 
+#put data in plot format - just chose an arbitrary measure to make life easier 
 temp <- melt(test_data)
 temp <- temp[temp$variable=="fwhm_x",]
 temp$group <- "local_set"
@@ -42,8 +44,8 @@ full_data <- rbind(temp,temp2)
 
 ```{r play around with plotting}
 
-#load in code from online to do half violin plot 
-source("~/Documents/Code/RainCloudPlots/tutorial_R/R_rainclouds.R")
+# #load in code from online to do half violin plot - this needs to be downloaded  from the web
+# source("~/Documents/Code/RainCloudPlots/tutorial_R/R_rainclouds.R")
 
 #first plot  - box plot with overlaid individual data points in same plot; interactive 
 test <- ggplot()+
@@ -59,24 +61,26 @@ test
 
 #attempt to do rain cloud plot 
 # will only work if you've run the script to get geom_flat_violin from https://github.com/RainCloudPlots/RainCloudPlots
-p2 <- ggplot(full_data,aes(x=group,y=value,fill=group))+
-  geom_flat_violin(position=position_nudge(x = .2, y = 0),adjust =2)+
-  geom_point(position=position_jitter(width=.15),size=.25)+
-  geom_boxplot(aes(x=group,y=value),alpha=0.3,width=.1)
-
-# print out non-interactive rain cloud plot
-p2
-
-# make interactive - geom_flat_violin doesn't play well with plotly 
-# will just make two interactive box plots 
-test2 <- ggplotly(p2)
-test2
+# p2 <- ggplot(full_data,aes(x=group,y=value,fill=group))+
+#   geom_flat_violin(position=position_nudge(x = .2, y = 0),adjust =2)+
+#   geom_point(position=position_jitter(width=.15),size=.25)+
+#   geom_boxplot(aes(x=group,y=value),alpha=0.3,width=.1)
+# 
+# # print out non-interactive rain cloud plot
+# p2
+# 
+# # make interactive - geom_flat_violin doesn't play well with plotly 
+# # will just make two interactive box plots 
+# test2 <- ggplotly(p2)
+# test2
 
 # make violin plot with ggplot 
 v_plot <- ggplot(full_data,aes(x=group,y=value,fill=group))+
   geom_violin(trim=FALSE)+
-  geom_point(position=position_jitter(width=.15),size=.25)
-  
+  geom_point(position=position_jitter(width=.15),size=.25)+
+  geom_boxplot(aes(x=group,y=value),alpha=0.3,width=.1)
+
+
 # make interactive -- mousing over data point gives the value and subject ID; don't get IQR informaion from violin plot 
 v_plot <-ggplotly(v_plot)
 v_plot
@@ -98,14 +102,19 @@ df <- full_data
 #load in the example data from online to compare how data looks 
 temp_df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/violin_data.csv")
 
+#want to show individual data points for our own data but not API data 
+# for API, want to show box plot/distribution (violin?)
+
+df <- full_data
+
 p <- df %>%
   plot_ly(type = 'violin') %>%
-  add_trace( #put in first half of data - local 
-    x = ~group[df$group=="local_set"],
+  add_trace(
+    x = ~variable[df$group=="local_set"],
     y = ~value[df$group=="local_set"],
-    legendgroup = 'Local Set',
-    scalegroup = 'Local Set',
-    name = 'Local Set',
+    legendgroup = 'Local',
+    scalegroup = 'Local',
+    name = 'Local',
     side = 'negative',
     box = list(
       visible = T
@@ -114,11 +123,11 @@ p <- df %>%
       visible = T
     ),
     line = list(
-      color = 'orange'
+      color = 'blue'
     )
   ) %>%
-  add_trace( #put in  second  half of data - API 
-     x = ~group[df$group=="API"],
+  add_trace(
+    x = ~variable[df$group=="API"],
     y = ~value[df$group=="API"],
     legendgroup = 'API',
     scalegroup = 'API',
@@ -147,7 +156,6 @@ p <- df %>%
     violinmode = 'overlay'
   )
 
-#view graph 
 p
 
 ```
@@ -189,6 +197,80 @@ p
 #              currentvalue = list(prefix = "Color: "), 
 #              pad = list(t = 60), 
 #              steps = steps))) 
+
+```
+
+```{r}
+p <- df %>%
+  plot_ly(type = 'violin') %>%
+  add_trace( #put in first half of data - local 
+    x = ~group[df$group=="local_set"],
+    y = ~value[df$group=="local_set"],
+    legendgroup = 'Local Set',
+    scalegroup = 'Local Set',
+    name = 'Local Set',
+    side = 'negative',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = 'orange'
+    ), points = 'all',
+    pointpos = -0.9,
+    jitter = 0.1,
+    scalemode = 'count',
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = "orange"
+    ),
+    marker = list(
+      line = list(
+        width = 2,
+        color = "orange"
+      ),
+      symbol = 'line-ns'
+    )
+  ) %>%
+  add_trace( #put in  second  half of data - API 
+    x = ~group[df$group=="API"],
+    y = ~value[df$group=="API"],
+    legendgroup = 'API',
+    scalegroup = 'API',
+    name = 'API',
+    side = 'positive',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = 'green'
+    ) %>%
+      layout(
+        xaxis = list(
+          title = ""  
+        ),
+        yaxis = list(
+          title = "",
+          zeroline = F
+        ),
+        violingap = 0,
+        violingroupgap = 0,
+        violinmode = 'overlay'
+      )
+  ) 
+
+
+
+#view graph 
+p
+
 
 ```
 
