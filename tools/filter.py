@@ -8,7 +8,7 @@ def filterIQM(argv=sys.argv):
 
     # Read data here
     ## BOLD
-    df = read_csv("test_data/bold_all.csv")
+    df = read_csv('/Users/d/Desktop/bold_all.csv')
     cols = df.columns
     cols = cols.map(lambda x: x.replace(".", "_"))
     df.columns = cols
@@ -101,6 +101,8 @@ def filterIQM(argv=sys.argv):
         if args.tesla is not None:
             args.tesla = ['bids_meta_MagneticFieldStrength' + s for s in args.tesla]
             query += args.tesla
+
+        print(query)
 
         return df.query(" & ".join(query))
 
