@@ -21,14 +21,14 @@ def make_vio_plot(data, *args):
     print('Loading in dataframe...')
     
     # variable names we might want to list
-    qc_var_list = [‘aor’,‘aqi’,‘dummy_trs’,‘dvars_nstd’,‘dvars_std’,‘dvars_vstd’,
-                    ‘efc’,‘fber’,‘fd_mean’,‘fd_num’,‘fd_perc’,‘fwhm_avg’,‘fwhm_x’,‘fwhm_y’,
-                    ‘fwhm_z’,‘gcor’,‘gsr_x’,‘gsr_y’,‘size_t’,‘size_x’,‘size_y’,‘size_z’,‘snr’,
-                    ‘spacing_tr’,‘spacing_x’,‘spacing_y’,‘spacing_z’,‘summary_bg_k’,‘summary_bg_mad’,
-                    ‘summary_bg_mean’,‘summary_bg_median’,‘summary_bg_n’,‘summary_bg_p05’,
-                    ‘summary_bg_p95’,‘summary_bg_stdv’,‘summary_fg_k’,‘summary_fg_mad’,
-                    ‘summary_fg_mean’,‘summary_fg_median’,‘summary_fg_n’,‘summary_fg_p05’,
-                    ‘summary_fg_p95’,‘summary_fg_stdv’,‘tsnr’]
+    qc_var_list = ['aor','aqi','dummy_trs','dvars_nstd','dvars_std','dvars_vstd',
+                    'efc','fber','fd_mean','fd_num','fd_perc','fwhm_avg','fwhm_x','fwhm_y',
+                    'fwhm_z','gcor','gsr_x','gsr_y','size_t','size_x','size_y','size_z','snr',
+                    'spacing_tr','spacing_x','spacing_y','spacing_z','summary_bg_k','summary_bg_mad',
+                    'summary_bg_mean','summary_bg_median','summary_bg_n','summary_bg_p05',
+                    'summary_bg_p95','summary_bg_stdv','summary_fg_k','summary_fg_mad',
+                    'summary_fg_mean','summary_fg_median','summary_fg_n','summary_fg_p05',
+                    'summary_fg_p95','summary_fg_stdv','tsnr']
     
     # add stuff about whether or not variables were defined
     if len(args) > 1:
