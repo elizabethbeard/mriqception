@@ -15,7 +15,7 @@ __status__ = 'pre-alpha'
 """
 
 import argparse,datetime,os,sys,time
-from tools import load_groupfile, query_api, scatter
+from tools import load_groupfile, query_api, filterIQM
 
 #################################################
 ##             MAIN SCRIPT ENTRY               ##
@@ -43,18 +43,18 @@ def main(argv=sys.argv):
                                   'the output from MRIQC.'),
                             dest='group_file'
                             )
-    arg_parser.add_argument('-s', metavar='SEARCH_PHRASE', action='store', type=str,
-                            required=True, help=('Search phrase to filter API query.'
-                                                 'Format: xxxx xxxxx xxxxxx xxxxxx'),
-                            dest='search_phrase'
-                            )
-    arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str,
-                            choices=['bold', 'T1w', 'T2w'], required=False,
-                            default='T1w',
-                            help=('Scan type to query. Can choose from bold,'
-                                  ' T1w, or T2w.'),
-                            dest='scan_type'
-                            )
+    # arg_parser.add_argument('-s', metavar='SEARCH_PHRASE', action='store', type=str,
+    #                         required=True, help=('Search phrase to filter API query.'
+    #                                              'Format: xxxx xxxxx xxxxxx xxxxxx'),
+    #                         dest='search_phrase'
+    #                         )
+    # arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str,
+    #                         choices=['bold', 'T1w', 'T2w'], required=False,
+    #                         default='T1w',
+    #                         help=('Scan type to query. Can choose from bold,'
+    #                               ' T1w, or T2w.'),
+    #                         dest='scan_type'
+                            # )
     args = arg_parser.parse_args()
 
     #################################################
@@ -73,16 +73,22 @@ def main(argv=sys.argv):
     time.sleep(1)
     today_date = datetime.datetime.now().strftime('%m%d%Y')
 
-    print('Querying API for ' + args.scan_type + ' scans.')
+    # print('Querying API for ' + args.scan_type + ' scans.')
 
     ## GROUP FILE COULD TURN INTO A LIST OF FILES!!! Just need a way to keep track and name them...perhaps turn it into a tuple 
     ## of (name,path) or maybe even a key: val?
     ## Check that this dataframe is the same format as the result_df output from the query_api function!!
     loaded_df = load_groupfile(args.group_file)
 
+    filter_list = ['TR > 1.0','FD < .3']
+    filtered_api_df = filterIQM(filter_list)
+
+
+
+
     # result_df = query_api(args.scan_type,'MultibandAccelerationFactor>3','RepetitionTime>1')
-    # result_df = query_api(args.scan_type, ['MultibandAccelerationFactor>3', 'EchoTime>1'])
-    result_df = query_api(args.scan_type, 'MultibandAccelerationFactor>3&EchoTime>1')
+    # # result_df = query_api(args.scan_type, ['MultibandAccelerationFactor>3', 'EchoTime>1'])
+    # result_df = query_api(args.scan_type, 'MultibandAccelerationFactor>3&EchoTime>1')
 
     ## Scater plot/visualization functions would go below here and pass result_df as well as loaded_df pandas dataframes
     # something like this:
