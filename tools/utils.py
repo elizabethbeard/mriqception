@@ -7,7 +7,7 @@ from xml.dom import minidom
 from json import load
 from pandas.io.json import json_normalize
 
-def filterIQM(filter_list):
+def filterIQM(apidf, filter_list):
     """ Loads the API info and filters based on user-provided 
         parameters. Filter parameters should be a list of strings
         and string formats should be "(VAR) (Operator) (Value)".
@@ -23,9 +23,6 @@ def filterIQM(filter_list):
         the MRICQ API, but filtered to contain only your match 
         specifications.
     """
-    apidf = pd.read_csv('/Users/d/Desktop/bold_all.csv')
-    # print(apidf.head)
-
     cols = apidf.columns
     cols = cols.map(lambda x: x.replace(".", "_"))
     apidf.columns = cols
@@ -75,7 +72,7 @@ def load_groupfile(infile_path):
 
     return df
 
-def merge_dfs(udf, apidf):
+def merge_dfs(userdf, filtered_apidf):
     """ Merges the user/group dataframe and the filtered API dataframe
         while adding a groupby variable. Name is "SOURCE". User entries
         are "USER" and API entries are "API".
@@ -89,8 +86,8 @@ def merge_dfs(udf, apidf):
         the filtered API info. A "groupby" header called "SOURCE" is added
         with a "USER" or "API" entry for easy sorting/splitting.
     """
-    print(udf.head)
-    print(apidf.head)
+    print(userdf.head)
+    print(filtered_apidf.head)
 
 
 def query_api(stype, filters):
