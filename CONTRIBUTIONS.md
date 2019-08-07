@@ -8,7 +8,7 @@ Chris Foulon: https://github.com/chrisfoulon
 Damion Demeter: https://github.com/iamdamion
 Elizabeth Beard: https://github.com/elizabethbeard/
 Estée Rubien-Thomas: https://github.com/ear55
-Helena Gellerson: https://github.com/hgellersen
+Helena Gellersen: https://github.com/hgellersen
 Saren Seeley: https://github.com/sarenseeley
 Sofía Fernández-Lozano: https://github.com/soffiafdz
 Stephanie DeCross:  https://github.com/sdecross
