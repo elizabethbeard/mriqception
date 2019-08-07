@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
-from pandas import read_csv
+from pandas import read_table
 import argparse, sys
 
-
+#
 def filterIQM(argv=sys.argv):
 
     # Read data here
-    ## BOLD
-    df = read_csv('/Users/d/Desktop/bold_all.csv')
+    ## T1w
+    df = read_csv('/home/soffiafdz/mriqception/test_data/T1w.csv')
     cols = df.columns
     cols = cols.map(lambda x: x.replace(".", "_"))
     df.columns = cols
@@ -20,35 +20,35 @@ def filterIQM(argv=sys.argv):
         type=str, metavar="[ == | <= | >=] SNR",
         dest='snr', action='append')
 
-    parser.add_argument('-t', '--tsnr',
-        help='Filter IQM: Temporal Signal-to-Noise ratio',
-        type=str, metavar="[ == | <= | >=] TSNR",
-        dest='tsnr', action='append')
+    parser.add_argument('-sg', '--snr_gm',
+        help='Filter IQM: Signal-to-Noise ratio (GM)',
+        type=str, metavar="[ == | <= | >=] SNR_GM",
+        dest='snrg', action='append')
 
-    parser.add_argument('-d', '--dvars',
-        help='Filter IQM: Temporal Derivatives Variance (DVAR)',
-        type=str, metavar="[ == | <= | >=] DVAR",
-        dest='dvars', action='append')
+    parser.add_argument('-sw', '--snr_wm',
+        help='Filter IQM: Signal-to-Noise ratio (WM)',
+        type=str, metavar="[ == | <= | >=] SNR (WM)",
+        dest='snrw', action='append')
+
+    parser.add_argument('-sc', '--snr_csf',
+        help='Filter IQM: Signal-to-Noise ratio (CSF)',
+        type=str, metavar="[ == | <= | >=] SNR_CSF",
+        dest='snrc', action='append')
+
+    parser.add_argument('-c', '--cnr',
+        help='Filter IQM: Contrast-to-Noise ratio',
+        type=str, metavar="[ == | <= | >=] CNR",
+        dest='cnr', action='append')
+
+    parser.add_argument('-ef', '--efc',
+        help='Filter IQM: Entropy of voxels',
+        type=str, metavar="[ == | <= | >=] EFC",
+        dest='efc', action='append')
 
     parser.add_argument('-fw', '--fwhm',
         help='Filter IQM: Full-width half maximum smoothness',
         type=str, metavar="[ == | <= | >=] FWHM",
         dest='fwhm', action='append')
-
-    parser.add_argument('-m', '--fd',
-        help='Filter IQM: Framewise displacement',
-        type=str, metavar="[ == | <= | >=] FD",
-        dest='fd', action='append')
-
-    parser.add_argument('-gx', '--gsr_x',
-        help='Filter IQM: Ghost-to-Signal ratio (X axis)',
-        type=str, metavar="[ == | <= | >=] gsr_x",
-        dest='gsrx', action='append')
-
-    parser.add_argument('-gy', '--gsr_y',
-        help='Filter IQM: Ghost-to-Signal ratio (Y axis)',
-        type=str, metavar="[ == | <= | >=] gsr_y",
-        dest='gsry', action='append')
 
     parser.add_argument('-e', '--te',
         help='Filter Acquisition Parameter: Echo time',
@@ -74,9 +74,9 @@ def filterIQM(argv=sys.argv):
         if args.snr is not None:
             args.snr = ['snr' + s for s in args.snr]
             query += args.snr
-        if args.tsnr is not None:
-            args.tsnr = ['tsnr' + s for s in args.tsnr]
-            query += args.tsnr
+        if args.cnr is not None:
+            args.cnr = ['cnr' + s for s in args.cnr]
+            query += args.cnr
         if args.dvars is not None:
             args.dvars = ['dvars_nstd' + s for s in args.dvars]
             query += args.dvars
