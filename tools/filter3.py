@@ -7,7 +7,7 @@ def filterIQM(argv=sys.argv):
 
     # Read data here
     ## T1w
-    df = read_csv('/home/soffiafdz/mriqception/test_data/T1w.csv')
+    df = read_csv('/home/soffiafdz/mriqception/test_data/T2w.csv')
     cols = df.columns
     cols = cols.map(lambda x: x.replace(".", "_"))
     df.columns = cols
