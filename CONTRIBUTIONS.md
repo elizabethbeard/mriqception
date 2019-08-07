@@ -1,8 +1,8 @@
 # Contributors
 
-(in alphabetical order, with personal github)
+Team *mriqception* is...(in alphabetical order, with personal github):
 
-Ayelet Gertsovski:
+Ayelet Gertsovski: https://github.com/ayeletger
 Catherine Walsh: https://github.com/crewalsh
 Chris Foulon: https://github.com/chrisfoulon
 Damion Demeter: https://github.com/iamdamion
