@@ -33,7 +33,6 @@ def make_vio_plot(data, *args):
         variables = data.columns
         print('Loading all variables...')
     
-    sys.exit()
     # source: user/api
     # change the file from short format to long format
     df_long = pd.melt(data,id_vars='bids_name',var_name='var',value_name='values')
