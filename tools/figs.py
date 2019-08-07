@@ -43,29 +43,21 @@ def make_vio_plot(data, IQM_to_plot):
                 pass
         variables = str(IQM_to_plot)
         print('Loading variables: %s' %variables)
-    
-
-    print(data.shape)
-    print(data['_INDEX'])
-    sys.exit()
 
     # source: user/api
     # change the file from short format to long format
-    df_long = pd.melt(data,id_vars='bids_name',var_name='var',value_name='values')
-
-    # df_long = pd.wide_to_long(data, ['bids_name'], i="id", j="year"), i=['famid', 'birth'], j='age')
+    df_long = pd.melt(data,id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
 
     for var_name in variables:
         # create a split violin plot for a single variable
         fig = go.Figure()
+
+        sys.exit()
         
         # # the 'my data' variable is a subset of the original df for plotting reasons
         # # replace it with the actual user data
         # user_data = df_long[df_long['var'] == var_name][20:40]
-
-        print(user_data.head)
-        sys.exit()
-        
+       
         fig.add_trace(go.Violin(x=user_data[['var']][user_data['var']==var_name]['var'],
                         y=user_data[['values']][user_data['var']==var_name]['values'],
                         legendgroup='user data', scalegroup='user data', name='user data',
