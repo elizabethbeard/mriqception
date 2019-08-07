@@ -15,7 +15,7 @@ __status__ = 'pre-alpha'
 """
 
 import argparse,datetime,os,sys,time
-from tools import load_groupfile, query_api, filterIQM
+from tools import load_groupfile, query_api, filterIQM, merge_dfs, make_vio_plot
 
 #################################################
 ##             MAIN SCRIPT ENTRY               ##
@@ -75,13 +75,34 @@ def main(argv=sys.argv):
 
     # print('Querying API for ' + args.scan_type + ' scans.')
 
-    ## GROUP FILE COULD TURN INTO A LIST OF FILES!!! Just need a way to keep track and name them...perhaps turn it into a tuple 
-    ## of (name,path) or maybe even a key: val?
-    ## Check that this dataframe is the same format as the result_df output from the query_api function!!
-    loaded_df = load_groupfile(args.group_file)
 
     filter_list = ['TR > 1.0','FD < .3']
-    filtered_api_df = filterIQM(filter_list)
+    modality = 'bold'
+
+    here = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+    T1apicsv = os.path.join(here, 'demo_api', 'T1w_demo.csv')
+    T2apicsv = os.path.join(here, 'demo_api', 'T2w_demo.csv')
+    boldapicsv = os.path.join(here, 'demo_api', 'bold_demo.csv')
+
+    if modality == 'T1w':
+        group_file = T1apicsv
+    elif modality == 'T2w':
+        group_file = T1apicsv
+    elif modality == 'bold':
+        group_file = boldapicsv
+
+    # load user csv as df #
+    userdf = load_groupfile(group_file)
+
+    # load and filter api csv as df #
+    apidf = pd.read_csv(group_file)
+    filtered_apidf = filterIQM(,apidf,filter_list)
+
+    # merge dataframes together #
+    vis_ready_df = merge_dfs(userdf, filtered_apidf)
+
+
+
 
 
 

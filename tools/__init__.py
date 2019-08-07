@@ -1,11 +1,10 @@
 from .utils import filterIQM, load_groupfile, merge_dfs, query_api
-from .figs import scatter 
-
+from .figs import make_vio_plot
     
 __all__ = [
     'filterIQM',
     'load_groupfile,'
     'merge_dfs',
     'query_api',
-    'scatter',
+    'make_vio_plot',
 ]

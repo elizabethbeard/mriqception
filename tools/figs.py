@@ -3,8 +3,9 @@
 ### IMPORTS GO HERE ###
 import pandas as pd
 import plotly.graph_objects as go
+import sys
 
-def make_vio_plot(data, *args):
+def make_vio_plot(data, IQM_to_plot):
     ''' Make a violion plot of the api and user QC metrics.
     
     Args:
@@ -17,34 +18,53 @@ def make_vio_plot(data, *args):
     
     '''
     
-    print('Loading in dataframe: %s...' % data)
+    print('Loading in dataframe...')
+    
+    # variable names we might want to list
+    qc_var_list = ['aor','aqi','dummy_trs','dvars_nstd','dvars_std','dvars_vstd',
+                    'efc','fber','fd_mean','fd_num','fd_perc','fwhm_avg','fwhm_x','fwhm_y',
+                    'fwhm_z','gcor','gsr_x','gsr_y','size_t','size_x','size_y','size_z','snr',
+                    'spacing_tr','spacing_x','spacing_y','spacing_z','summary_bg_k','summary_bg_mad',
+                    'summary_bg_mean','summary_bg_median','summary_bg_n','summary_bg_p05',
+                    'summary_bg_p95','summary_bg_stdv','summary_fg_k','summary_fg_mad',
+                    'summary_fg_mean','summary_fg_median','summary_fg_n','summary_fg_p05',
+                    'summary_fg_p95','summary_fg_stdv','tsnr']
     
     # add stuff about whether or not variables were defined
-    if len(*args) < 1:
-        print('Please enter a list of variables you want visualized')
-        sys.exit()
-    if len(*args) > 1:
-        if arg in *args is not in data.columns():
-            print('Variable name not recognized.')
-            sys.exit()
-        else:
-            variables = *args
-            print('Loading variables: %s' % variables)
-    else:
-        variables = data.columns()
+    if len(IQM_to_plot) == 0:
+        variables = qc_var_list
         print('Loading all variables...')
+    elif len(IQM_to_plot) > 0:
+        for x in IQM_to_plot:
+            if str(x) not in qc_var_list:
+                print('Variable name not recognized.')
+                sys.exit()
+            else:
+                pass
+        variables = str(IQM_to_plot)
+        print('Loading variables: %s' %variables)
     
+
+    print(data.shape)
+    print(data['_INDEX'])
+    sys.exit()
+
     # source: user/api
     # change the file from short format to long format
-    df_long = pd.melt(df,id_vars='bids_name',var_name='var',value_name='values')
-    
+    df_long = pd.melt(data,id_vars='bids_name',var_name='var',value_name='values')
+
+    # df_long = pd.wide_to_long(data, ['bids_name'], i="id", j="year"), i=['famid', 'birth'], j='age')
+
     for var_name in variables:
-         # create a split violin plot for a single variable
+        # create a split violin plot for a single variable
         fig = go.Figure()
         
-        # the 'my data' variable is a subset of the original df for plotting reasons
-        # replace it with the actual user data
-        user_data = df_long[df_long['var'] == var_name][20:40]
+        # # the 'my data' variable is a subset of the original df for plotting reasons
+        # # replace it with the actual user data
+        # user_data = df_long[df_long['var'] == var_name][20:40]
+
+        print(user_data.head)
+        sys.exit()
         
         fig.add_trace(go.Violin(x=user_data[['var']][user_data['var']==var_name]['var'],
                         y=user_data[['values']][user_data['var']==var_name]['values'],
