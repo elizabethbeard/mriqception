@@ -15,7 +15,7 @@ __status__ = 'pre-alpha'
 """
 
 import argparse,datetime,os,sys,time
-from tools import load_groupfile, query_api, filterIQM, make_vio_plot
+from tools import load_groupfile, query_api, filterIQM, merge_dfs, make_vio_plot
 
 #################################################
 ##             MAIN SCRIPT ENTRY               ##
