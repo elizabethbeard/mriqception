@@ -1,18 +1,70 @@
+#!/usr/bin/env python
+
 ### IMPORTS GO HERE ###
-import seaborn as sns
-import matplotlib.pyplot as plt
+import pandas as pd
+import plotly.graph_objects as go
 
-## SCATTER PLOT EXAMPLE ##
-def scatter(loaded_df, result_df):
-    print('NOT DONE YET')
+def make_vio_plot(data, *args):
+    ''' Make a violion plot of the api and user QC metrics.
+    
+    Args:
+        data (dataframe): a dataframe including the API and USER data. Must have a column labeled 'source' with USER or API defined.
+        *args (list): the list of variables a user might want displayed, defaults
+        to all variables.
+    
+    Returns: A violin plot of each MRIQC metric, comparing the user-level data to
+    the API data.
+    
+    '''
+    
+    print('Loading in dataframe: %s...' % data)
+    
+    # add stuff about whether or not variables were defined
+    if len(*args) < 1:
+        print('Please enter a list of variables you want visualized')
+        sys.exit()
+    if len(*args) > 1:
+        if arg in *args is not in data.columns():
+            print('Variable name not recognized.')
+            sys.exit()
+        else:
+            variables = *args
+            print('Loading variables: %s' % variables)
+    else:
+        variables = data.columns()
+        print('Loading all variables...')
+    
+    # source: user/api
+    # change the file from short format to long format
+    df_long = pd.melt(df,id_vars='bids_name',var_name='var',value_name='values')
+    
+    for var_name in variables:
+         # create a split violin plot for a single variable
+        fig = go.Figure()
+        
+        # the 'my data' variable is a subset of the original df for plotting reasons
+        # replace it with the actual user data
+        user_data = df_long[df_long['var'] == var_name][20:40]
+        
+        fig.add_trace(go.Violin(x=user_data[['var']][user_data['var']==var_name]['var'],
+                        y=user_data[['values']][user_data['var']==var_name]['values'],
+                        legendgroup='user data', scalegroup='user data', name='user data',
+                        side='negative',
+                        points='all',
+                        pointpos=-0.5, # where to position points
+                        jitter=0.1,
+                        line_color='lightseagreen')
+             )
+        fig.add_trace(go.Violin(x=df_long[['var']][df_long['var']==var_name]['var'],
+                        y=df_long[['values']][df_long['var']==var_name]['values'],
+                        legendgroup='api', scalegroup='api', name='api',
+                        side='positive',
+                        line_color='mediumpurple')
+             )
+        # update characteristics shared by all traces
+        fig.update_traces(meanline_visible=True,
+                  box_visible=True) #scale violin plot area with total count
+        fig.show()
 
-    # ## EXAMPLE FROM THE NOTEBOOK LINK WE GOT ##
-    # plt.figure(figsize=(10,14))
-    # sns.stripplot(x='bids_meta.MultibandAccelerationFactor', y='tsnr', data=df, jitter=0.4, alpha=0.3, size=4)
-
-    # ## Alternate example ##
-    # plt.figure(figsize=(10,14))
-    # sns.stripplot(x='bids_meta.MultibandAccelerationFactor', y='tsnr', data=df_unique[df_unique['tsnr']<100], jitter=0.4, alpha=0.3, size=4)
-
-    # ## show for testing ##
-    # plt.show()
+        #print description of figure
+        #print(dictionary.get(var_name))
