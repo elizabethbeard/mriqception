@@ -86,9 +86,11 @@ def merge_dfs(userdf, filtered_apidf):
         the filtered API info. A "groupby" header called "SOURCE" is added
         with a "USER" or "API" entry for easy sorting/splitting.
     """
-    print(userdf.head)
-    print(filtered_apidf.head)
+    userdf['SOURCE']='USER'
+    filtered_apidf['SOURCE']='API'
 
+    merged_df = pd.concat([userdf,filtered_apidf], sort=True).fillna(0)
+    return merged_df
 
 def query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.
