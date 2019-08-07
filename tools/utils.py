@@ -7,120 +7,45 @@ from xml.dom import minidom
 from json import load
 from pandas.io.json import json_normalize
 
-
-from pandas import read_csv
-import argparse, sys
-
-
-def filterIQM(df,):
-    """ Load your MRIQC group tsv file and return a pandas df to then 
-        use for visualizations or any other functions down the line.
+def filterIQM(apidf, filter_list):
+    """ Loads the API info and filters based on user-provided 
+        parameters. Filter parameters should be a list of strings
+        and string formats should be "(VAR) (Operator) (Value)".
+        Example: ['TR == 3.0'] or ['TR > 1.0','FD < .3']
+        Note: Each element in each string is SPACE separated! 
     
     Args:
-        infile_path (string): Path to your MRIQC tsv that you got
-        from running MRIQC on your LOCAL group. However, this can
-        be used to load any other downloaded/shared tsv for future 
-        integration
+        apidf (pandas dataframe): Pandas df of the API info. 
+        filter_list = (list): List of argument strings that will
+        be joined by ampersands to use pandas query function.
 
     Returns: A pandas dataframe containing data pulled from
         the MRICQ API, but filtered to contain only your match 
         specifications.
     """
-    cols = df.columns
+    cols = apidf.columns
     cols = cols.map(lambda x: x.replace(".", "_"))
-    df.columns = cols
+    apidf.columns = cols
 
-    parser = argparse.ArgumentParser(description = "Process the IQM's to sort.")
+    query = []
+    expected_filters = {'SNR':'snr','TSNR':'tsnr',
+                        'DVAR':'dvars_nstd','FD':'fd_mean',
+                        'FWHM':'fwhm_avg','Tesla':'bids_meta_MagneticFieldStrength',
+                        'gsr_x':'gsr_x','gsr_y':'gsr_y',
+                        'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime'}
+    filter_check = list(expected_filters.keys())
 
-    parser.add_argument('-s', '--snr',
-        help='Filter IQM: Signal-to-Noise ratio',
-        type=str, metavar="[ == | <= | >=] SNR",
-        dest='snr', action='append')
+    for filt in filter_list:
+        var = filt.split(' ')[0]
+        op = filt.split(' ')[1]
+        val = filt.split(' ')[2]
+        if var in filter_check:
+            filt_str = expected_filters[var] + op + val
+            query.append(filt_str)
 
-    parser.add_argument('-t', '--tsnr',
-        help='Filter IQM: Temporal Signal-to-Noise ratio',
-        type=str, metavar="[ == | <= | >=] TSNR",
-        dest='tsnr', action='append')
+    filtered_df = apidf.query(' & '.join(query))
 
-    parser.add_argument('-d', '--dvars',
-        help='Filter IQM: Temporal Derivatives Variance (DVAR)',
-        type=str, metavar="[ == | <= | >=] DVAR",
-        dest='dvars', action='append')
-
-    parser.add_argument('-fw', '--fwhm',
-        help='Filter IQM: Full-width half maximum smoothness',
-        type=str, metavar="[ == | <= | >=] FWHM",
-        dest='fwhm', action='append')
-
-    parser.add_argument('-m', '--fd',
-        help='Filter IQM: Framewise displacement',
-        type=str, metavar="[ == | <= | >=] FD",
-        dest='fd', action='append')
-
-    parser.add_argument('-gx', '--gsr_x',
-        help='Filter IQM: Ghost-to-Signal ratio (X axis)',
-        type=str, metavar="[ == | <= | >=] gsr_x",
-        dest='gsrx', action='append')
-
-    parser.add_argument('-gy', '--gsr_y',
-        help='Filter IQM: Ghost-to-Signal ratio (Y axis)',
-        type=str, metavar="[ == | <= | >=] gsr_y",
-        dest='gsry', action='append')
-
-    parser.add_argument('-e', '--te',
-        help='Filter Acquisition Parameter: Echo time',
-        type=str, metavar="[ == | <= | >=] TE",
-        dest='te', action='append')
-
-    parser.add_argument('-r', '--tr',
-        help='Filter Acquisition Parameter: Repetition time',
-        type=str, metavar="[ == | <= | >=] TR",
-        dest='tr', action='append')
-
-    parser.add_argument('-T', '--Tesla',
-        help='Filter Acquisition Parameter: Magnetic Field Strength',
-        type=str, metavar="[ == | <= | >=] Tesla",
-        dest='tesla', action='append')
-
-    args = parser.parse_args()
-
-    if sys.argv[1:] == 0:
-        return df
-    else:
-        query = []
-        if args.snr is not None:
-            args.snr = ['snr' + s for s in args.snr]
-            query += args.snr
-        if args.tsnr is not None:
-            args.tsnr = ['tsnr' + s for s in args.tsnr]
-            query += args.tsnr
-        if args.dvars is not None:
-            args.dvars = ['dvars_nstd' + s for s in args.dvars]
-            query += args.dvars
-        if args.fwhm is not None:
-            args.fwhm = ['fwhm_avg' + s for s in args.fwhm]
-            query += args.fwhm
-        if args.fd is not None:
-            args.fd = ['fd_mean' + s for s in args.fd]
-            query += args.fd
-        if args.gsrx is not None:
-            args.gsrx = ['gsr_x' + s for s in args.gsrx]
-            query += args.gsrx
-        if args.gsry is not None:
-            args.gsry = ['gsr_y' + s for s in args.gsry]
-            query += args.gsry
-        if args.te is not None:
-            args.te = ['bids_meta_EchoTime' + s for s in args.te]
-            query += args.te
-        if args.tr is not None:
-            args.tr = ['bids_meta_RepetitionTime' + s for s in args.tr]
-            query += args.tr
-        if args.tesla is not None:
-            args.tesla = ['bids_meta_MagneticFieldStrength' + s for s in args.tesla]
-            query += args.tesla
-
-        return df.query(" & ".join(query))
-
+    return filtered_df
 
 # Functions are in alphabetical order, because lazy! ##
 def load_groupfile(infile_path):
@@ -147,6 +72,29 @@ def load_groupfile(infile_path):
 
     return df
 
+def merge_dfs(userdf, filtered_apidf):
+    """ Merges the user/group dataframe and the filtered API dataframe
+        while adding a groupby variable. Name is "SOURCE". User entries
+        are "USER" and API entries are "API".
+    
+    Args:
+        udf (pandas df): User MRIQC tsv converted to pandas dataframe
+        apidf (pandas df): API info, filtered and stored in padas
+            dataframe.
+
+    Returns: A merged pandas dataframe containing the user group info and 
+        the filtered API info. A "groupby" header called "SOURCE" is added
+        with a "USER" or "API" entry for easy sorting/splitting.
+    """
+    userdf['SOURCE']='USER'
+    filtered_apidf['SOURCE']='API'
+    filtered_apidf.rename(columns={'_id': 'bids_name'}, inplace=True)
+
+    merged_df = pd.concat([userdf,filtered_apidf], sort=True).fillna(0)
+    # merged_df['_INDEX']=merged_df.index
+
+    # merged_df_with_index = pd.DataFrame(index = merged_df.index, data= merged_df)
+    return merged_df
 
 def query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.

@@ -123,24 +123,7 @@ p <- df %>%
       visible = T
     ),
     line = list(
-      color = 'orange'
-    ),
-    points = 'all',
-    pointpos = -0.9,
-    jitter = 0.1,
-    scalemode = 'count',
-    meanline = list(
-      visible = T
-    ),
-    line = list(
-      color = "orange"
-    ),
-    marker = list(
-      line = list(
-        width = 2,
-        color = "orange"
-      ),
-      symbol = 'line-ns'
+      color = 'blue'
     )
   ) %>%
   add_trace(
@@ -167,7 +150,10 @@ p <- df %>%
     yaxis = list(
       title = "",
       zeroline = F
-    )
+    ),
+    violingap = 0,
+    violingroupgap = 0,
+    violinmode = 'overlay'
   )
 
 p
@@ -215,72 +201,75 @@ p
 ```
 
 ```{r}
-# p <- df %>%
-#   plot_ly(type = 'violin') %>%
-#   add_trace( #put in first half of data - local 
-#     x = ~group[df$group=="local_set"],
-#     y = ~value[df$group=="local_set"],
-#     legendgroup = 'Local Set',
-#     scalegroup = 'Local Set',
-#     name = 'Local Set',
-#     side = 'negative',
-#     box = list(
-#       visible = T
-#     ),
-#     meanline = list(
-#       visible = T
-#     ),
-#     line = list(
-#       color = 'orange'
-#     ), points = 'all',
-#     pointpos = -0.9,
-#     jitter = 0.1,
-#     scalemode = 'count',
-#     meanline = list(
-#       visible = T
-#     ),
-#     line = list(
-#       color = "orange"
-#     ),
-#     marker = list(
-#       line = list(
-#         width = 2,
-#         color = "orange"
-#       ),
-#       symbol = 'line-ns'
-#     )
-#   ) %>%
-#   add_trace( #put in  second  half of data - API 
-#     x = ~group[df$group=="API"],
-#     y = ~value[df$group=="API"],
-#     legendgroup = 'API',
-#     scalegroup = 'API',
-#     name = 'API',
-#     side = 'positive',
-#     box = list(
-#       visible = T
-#     ),
-#     meanline = list(
-#       visible = T
-#     ),
-#     line = list(
-#       color = 'green'
-#     ) %>%
-#       layout(
-#         xaxis = list(
-#           title = ""  
-#         ),
-#         yaxis = list(
-#           title = "",
-#           zeroline = F
-#         )
-#       )
-#   ) 
-# 
-# 
-# 
-# #view graph 
-# p
+p <- df %>%
+  plot_ly(type = 'violin') %>%
+  add_trace( #put in first half of data - local 
+    x = ~group[df$group=="local_set"],
+    y = ~value[df$group=="local_set"],
+    legendgroup = 'Local Set',
+    scalegroup = 'Local Set',
+    name = 'Local Set',
+    side = 'negative',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = 'orange'
+    ), points = 'all',
+    pointpos = -0.9,
+    jitter = 0.1,
+    scalemode = 'count',
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = "orange"
+    ),
+    marker = list(
+      line = list(
+        width = 2,
+        color = "orange"
+      ),
+      symbol = 'line-ns'
+    )
+  ) %>%
+  add_trace( #put in  second  half of data - API 
+    x = ~group[df$group=="API"],
+    y = ~value[df$group=="API"],
+    legendgroup = 'API',
+    scalegroup = 'API',
+    name = 'API',
+    side = 'positive',
+    box = list(
+      visible = T
+    ),
+    meanline = list(
+      visible = T
+    ),
+    line = list(
+      color = 'green'
+    ) %>%
+      layout(
+        xaxis = list(
+          title = ""  
+        ),
+        yaxis = list(
+          title = "",
+          zeroline = F
+        ),
+        violingap = 0,
+        violingroupgap = 0,
+        violinmode = 'overlay'
+      )
+  ) 
+
+
+
+#view graph 
+p
 
 
 ```
