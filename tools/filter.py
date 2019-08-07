@@ -8,7 +8,7 @@ def filterIQM(argv=sys.argv):
 
     # Read data here
     ## BOLD
-    df = read_csv('/Users/d/Desktop/bold_all.csv')
+    df = read_csv('/home/soffiafdz/mriqception/test_data/bold_all.csv')
     cols = df.columns
     cols = cols.map(lambda x: x.replace(".", "_"))
     df.columns = cols
@@ -67,7 +67,7 @@ def filterIQM(argv=sys.argv):
 
     args = parser.parse_args()
 
-    if sys.argv[1:] == 0:
+    if len(sys.argv[1:]) == 0:
         return df
     else:
         query = []
