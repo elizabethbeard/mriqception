@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import sys
 
-def make_vio_plot(data, *args):
+def make_vio_plot(data, IQM_to_plot):
     ''' Make a violion plot of the api and user QC metrics.
     
     Args:
@@ -20,26 +20,35 @@ def make_vio_plot(data, *args):
     
     print('Loading in dataframe...')
     
+    # variable names we might want to list
+    qc_var_list = ['aor','aqi','dummy_trs','dvars_nstd','dvars_std','dvars_vstd',
+                    'efc','fber','fd_mean','fd_num','fd_perc','fwhm_avg','fwhm_x','fwhm_y',
+                    'fwhm_z','gcor','gsr_x','gsr_y','size_t','size_x','size_y','size_z','snr',
+                    'spacing_tr','spacing_x','spacing_y','spacing_z','summary_bg_k','summary_bg_mad',
+                    'summary_bg_mean','summary_bg_median','summary_bg_n','summary_bg_p05',
+                    'summary_bg_p95','summary_bg_stdv','summary_fg_k','summary_fg_mad',
+                    'summary_fg_mean','summary_fg_median','summary_fg_n','summary_fg_p05',
+                    'summary_fg_p95','summary_fg_stdv','tsnr']
+    
     # add stuff about whether or not variables were defined
-    if len(args) > 1:
-        for x in args:
-            if str(x) not in data.columns:
+    if len(IQM_to_plot) == 0:
+        variables = qc_var_list
+        print('Loading all variables...')
+    elif len(IQM_to_plot) > 0:
+        for x in IQM_to_plot:
+            if str(x) not in qc_var_list:
                 print('Variable name not recognized.')
                 sys.exit()
-        else:
-            variables = str(args)
-            print('Loading variables: %s' % type(variables))
-    else:
-        variables = data.columns
-        print('Loading all variables...')
+            else:
+                variables = str(IQM_to_plot)
+                print('Loading variables: %s' % type(variables))
     
-    sys.exit()
     # source: user/api
     # change the file from short format to long format
     df_long = pd.melt(data,id_vars='bids_name',var_name='var',value_name='values')
-    
+
     for var_name in variables:
-         # create a split violin plot for a single variable
+        # create a split violin plot for a single variable
         fig = go.Figure()
         
         # the 'my data' variable is a subset of the original df for plotting reasons
