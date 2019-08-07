@@ -6,8 +6,8 @@ Call this program with:
     -? filter/search phrase - argument in unknown format...
 __authors__ = [Elizabeth C. Beard, Stephanie Rossi Chen,Stephanie N. DeCross,
                Damion V. Demeter, Sofía Fernández-Lozano, Chris Foulon,
-               Helena M. Gellersen, Estée Rubien-Thomas, Saren H. Seeley,
-               Catherine R. Walsh]
+               Helena M. Gellersen, Ayelet Gertsovski, Estée Rubien-Thomas,
+               Saren H. Seeley, Catherine R. Walsh]
 __version__ = '0.01'
 __maintainer__ = '??'
 __email__ = '??@??.edu'
