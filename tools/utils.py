@@ -26,43 +26,11 @@ def filterIQM(apidf, modality, filter_list):
         specifications.
     """
     cols = apidf.columns
-    cols = cols.map(lambda x: x.replace(".", "_").lowercase())
+    cols = cols.map(lambda x: x.replace(".", "_").lower())
     apidf.columns = cols
 
-    ## FOR LATER: ##
-    # CONTROL WHICH EXPECTED VARIABLE LIST YOU CHECK DEPENDING
-    # ON THE MODALITY TYPE. (This will be useless if it's a checkbox
-    # or a pull down in a web interface...)
-
-    # bold_filters = {'SNR':'snr','TSNR':'tsnr',
-    #                 'DVAR':'dvars_nstd','FD':'fd_mean',
-    #                 'FWHM':'fwhm_avg','Tesla':'bids_meta_MagneticFieldStrength',
-    #                 'gsr_x':'gsr_x','gsr_y':'gsr_y',
-    #                 'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime'}
-
-    # t1_filters = {'SNR_TOTAL':'snr_total',
-    #               'SNR_GM':'snr_gm',
-    #               'SNR_WM':'snr_wm',
-    #               'SNR_CSF':'snr_csf',
-    #               'CNR':'cnr',
-    #               'EFC':'efc',
-    #               'FWHM':'fwhm_avg',
-    #               'TE':'bids_meta_EchoTime',
-    #               'TR':'bids_meta_RepetitionTime',
-    #               'Tesla':'bids_meta_MagneticFieldStrength'
-    #               }
-
-    # t2_filters = {
-    #              'SNR_TOTAL':'snr_total',
-    #              'SNR_GM':'snr_gm',
-    #              'SNR_WM':'snr_wm',
-    #              'SNR_CSF':'snr_csf',
-    #              'CNR':'cnr',
-    #              'EFC':'efc'
-    #              }
-
     query = []
-    mod = modality.lowercase()
+    mod = modality.lower()
 
     if mod == 'bold':
         expected_filters = {'snr':'snr','tsnr':'tsnr',
@@ -82,7 +50,7 @@ def filterIQM(apidf, modality, filter_list):
                 'te':'bids_meta_echotime','tr':'bids_meta_repetitiontime'}
 
     if all(isinstance(x,str) for x in filter_list):
-        filter_list = [x.lower() for x in filter_list]
+        filter_list = list(map(str.lower, filter_list))
     else:
         raise ValueError('filter_list contains items other than strings')
 
