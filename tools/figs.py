@@ -44,8 +44,8 @@ def make_vio_plot(data, IQM_to_plot):
         variables = IQM_to_plot
         print('Loading variables: %s' %variables)
     
-    if not outliers:
-        print('Please specify whether you want api outliers in your visualization or not')
+    #if not outliers:
+    #    print('Please specify whether you want api outliers in your visualization or not')
     
     # source: user/api
     # change the file from short format to long format
@@ -78,6 +78,7 @@ def make_vio_plot(data, IQM_to_plot):
         fig.update_layout(autosize=False,
                          width=600,
                          height=600)
+        fig.update_layout(template="plotly_white") # make background white
         fig.show()
         
 
