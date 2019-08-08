@@ -96,7 +96,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors,outliers=False):
     for var_name in variables:
 
         #family_color = plot_dict[var_name] # plot same-family IQMs in same color
-
+        API_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
         # identify some outliers
         if outliers: 
             q75, q25 = np.percentile(API_data, [75 ,25])
