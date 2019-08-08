@@ -3,7 +3,9 @@
 ### IMPORTS GO HERE ###
 import pandas as pd
 import plotly.graph_objects as go
+from ipywidgets import widgets
 import sys
+
 
 #def make_vio_plot(data, IQM_to_plot, data_descriptors):
 def make_vio_plot(data, IQM_to_plot):
@@ -56,13 +58,14 @@ def make_vio_plot(data, IQM_to_plot):
     # source: user/api
     # change the file from short format to long format
     df_long = pd.melt(data, id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
-
+    
+    
     for var_name in variables:
         # identify some outliers
         
         # create a split violin plot for a single variable
         fig = go.Figure()
-               
+        
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var'],
                         y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
                         legendgroup='user data', scalegroup='user data', name='user data',
@@ -85,7 +88,32 @@ def make_vio_plot(data, IQM_to_plot):
                          width=600,
                          height=600)
         fig.update_layout(template="plotly_white") # make background white
-        fig.show()
+        
+        # create a figure widget in order to show the dropdown menu
+        fig_widget = go.FigureWidget(fig)
+        
+        
+        # create a dropdown menu widget for the variable name
+        dropdown_widget = widgets.Dropdown(
+                options=list(df_long['var'].unique()),
+                value='fd_mean',
+                description='IQM:',
+                )
+        
+        def response(change):
+            var_name = dropdown_widget.value
+            with fig_widget.batch_update():
+                fig_widget.data[0].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var']
+                fig_widget.data[0].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values']
+                fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
+                fig_widget.data[1].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
+
+        dropdown_widget.observe(response, names="value")
+        
+        widgets.VBox([dropdown_widget,
+              fig_widget])
+        
+        #fig.show()
         
 
         #print description of figure
