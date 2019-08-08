@@ -36,7 +36,6 @@ vis_ready_df = merge_dfs(userdf, filtered_apidf)
 IQM_to_plot = ['fwhm_avg','fber']
 
 v = make_vio_plot(vis_ready_df, IQM_to_plot)
-
 # print(vis_ready_df.head)
 
 # for col in userdf.columns:

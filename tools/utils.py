@@ -88,9 +88,10 @@ def merge_dfs(userdf, filtered_apidf):
     """
     userdf['SOURCE']='USER'
     filtered_apidf['SOURCE']='API'
+    filtered_apidf.rename(columns={'_id': 'bids_name'}, inplace=True)
 
     merged_df = pd.concat([userdf,filtered_apidf], sort=True).fillna(0)
-    merged_df['_INDEX']=merged_df.index
+    # merged_df['_INDEX']=merged_df.index
 
     # merged_df_with_index = pd.DataFrame(index = merged_df.index, data= merged_df)
     return merged_df
