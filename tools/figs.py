@@ -1,21 +1,20 @@
 #!/usr/bin/env python
 
-# test
-
 ### IMPORTS GO HERE ###
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from ipywidgets import widgets
 import sys
 
-#def make_vio_plot(data, IQM_to_plot, data_descriptors):
-def make_vio_plot(data, IQM_to_plot):
+def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     ''' Make a violion plot of the api and user QC metrics.
     
     Args:
         data (dataframe): a dataframe including the API and USER data. Must have a column labeled 'source' with USER or API defined.
         IQM_to_plot (list): list of IQMs to plot. If you want to view all the IQMs, leave the list empty.
         data_descriptors (path-to-csv): the path to read in a csv of variable descriptions
+        outliers (Boolean): if True, remove outliers. Default is to leave outliers in
     
     Returns: A violin plot of each MRIQC metric, comparing the user-level data to
     the API data.
@@ -60,6 +59,7 @@ def make_vio_plot(data, IQM_to_plot):
     # change the file from short format to long format
     df_long = pd.melt(data, id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
 
+
     # make plotting dictionary for family colors
     # mediumpurple - lightskyblue - red is #A52A2A - orange is #D2691E - yellow is #DAA520 - lightseafoamgreen - 
     plot_dict = {'tsnr': ('#D2691E'), 'gcor': ('#D2691E'), 'dvars_vstd': ('#D2691E'), 'dvars_std': ('#D2691E'), # temporal
@@ -69,12 +69,12 @@ def make_vio_plot(data, IQM_to_plot):
                  'cjv': ('#A52A2A'), 'cnr': ('#A52A2A'), 'qi_2': ('#A52A2A'), 'snr': ('#A52A2A'), # noise
                  'snr_csf': ('#A52A2A'), 'snr_gm': ('#A52A2A'), 'snr_wm': ('#A52A2A'), 'snr_total': ('#A52A2A'),
                  'snrd_csf': ('#A52A2A'), 'snrd_gm': ('#A52A2A'), 'snrd_wm': ('#A52A2A'), 
-                 'fd_mean': ('lightseafoamgreen'), 'fd_num': ('lightseafoamgreen'), 'fd_perc': ('lightseafoamgreen'), # motion IQMs
-                 'inu_med': ('lightskyblue'), 'inu_range': ('lightskyblue'), 'wm2max': ('lightskyblue'), # artifact IQMs
-                 'aor': ('mediumpurple'), 'aqi': ('mediumpurple'), 'dummy_trs': ('mediumpurple'), 'gsr_x': ('mediumpurple'), # other
-                 'gsr_y': ('mediumpurple'), 'qi_1': ('mediumpurple'), 'rpve_csf': ('mediumpurple'), 'rpve_gm': ('mediumpurple'),
-                 'rpve_wm': ('mediumpurple'), 'tpm_overlap_csf': ('mediumpurple'), 'tpm_overlap_gm': ('mediumpurple'),
-                 'tpm_overlap_wm': ('mediumpurple'), 
+                 'fd_mean': ('#66CDAA'), 'fd_num': ('#66CDAA'), 'fd_perc': ('#66CDAA'), # motion IQMs
+                 'inu_med': ('#6495ED'), 'inu_range': ('#6495ED'), 'wm2max': ('#6495ED'), # artifact IQMs
+                 'aor': ('#9932CC'), 'aqi': ('#9932CC'), 'dummy_trs': ('#9932CC'), 'gsr_x': ('#9932CC'), # other
+                 'gsr_y': ('#9932CC'), 'qi_1': ('#9932CC'), 'rpve_csf': ('#9932CC'), 'rpve_gm': ('#9932CC'),
+                 'rpve_wm': ('#9932CC'), 'tpm_overlap_csf': ('#9932CC'), 'tpm_overlap_gm': ('#9932CC'),
+                 'tpm_overlap_wm': ('#9932CC'), 
                  'icvs_csf': ('#00008B'), 'icvs_gm': ('#00008B'), 'icvs_wm': ('#00008B'), # descriptive
                  'summary_bg_k': ('#00008B'), 'summary_bg_mad': ('#00008B'), 'summary_bg_mean': ('#00008B'),
                  'summary_bg_median': ('#00008B'), 'summary_bg_n': ('#00008B'), 'summary_bg_p05': ('#00008B'),
@@ -93,12 +93,29 @@ def make_vio_plot(data, IQM_to_plot):
                  'summary_wm_p95': ('#00008B'), 'summary_wm_stdv': ('#00008B') 
                  }
     
-    
     var_name = variables[0] # the default first variable
-   
+    API_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
+    
+    def remove_outliers_from_api(API_data,outliers):
+        # identify some outliers
+        if outliers: 
+            q75, q25 = np.percentile(API_data, [75 ,25])
+            iqr = q75 - q25
+            min_out = q25-1.5*iqr 
+            max_out = q75+1.5*iqr
+            
+            #if outliers are present, replace them with NaN
+            API_data[API_data > max_out] = np.nan
+            API_data[API_data < min_out] = np.nan
+        
+        return API_data
+    
+    API_data = remove_outliers_from_api(API_data,outliers)
+        
+        
     # create a split violin plot for a single variable
     fig = go.Figure()
-    
+           
     fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var'],
                     y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
                     legendgroup='user data', scalegroup='user data', name='user data',
@@ -106,10 +123,11 @@ def make_vio_plot(data, IQM_to_plot):
                     points='all',
                     pointpos=-0.5, # where to position points
                     jitter=0.1,
-                    line_color=plot_dict.get(var_name, 'red')) # plot same-family IQMs in same color
+                    hovertext=df_long['bids_name'],
+                    line_color=plot_dict.get(var_name, 'red')) # plot same-family IQMs in same color)
          )
     fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
-                    y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
+                    y=API_data,
                     legendgroup='api', scalegroup='api', name='api',
                     side='positive',
                     line_color='rgb(58,54,54)')
@@ -132,20 +150,25 @@ def make_vio_plot(data, IQM_to_plot):
             value=var_name,
             description='IQM:',
             )
-        
+    # define the changes that occur based on the choice in the dropdown menu
     def response(change):
         var_name = dropdown_widget.value
+        
+        API_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
+        API_data = remove_outliers_from_api(API_data,outliers)
+        
         with fig_widget.batch_update():
             fig_widget.data[0].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var']
             fig_widget.data[0].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values']
             fig_widget.data[0].line = {'color': plot_dict.get(var_name, 'red')}
             fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
-            fig_widget.data[1].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
+            fig_widget.data[1].y = API_data
             
 
     dropdown_widget.observe(response, names="value")
     
     return(dropdown_widget, fig_widget)
+    
 
-        #print description of figure
-        #print(dictionary.get(var_name))
+    #print description of figure
+    #print(dictionary.get(var_name))
