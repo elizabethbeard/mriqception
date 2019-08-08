@@ -65,7 +65,7 @@ def make_vio_plot(data, IQM_to_plot):
                         line_color='lightseagreen')
              )
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
-                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
+                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
                         legendgroup='api', scalegroup='api', name='api',
                         side='positive',
                         line_color='mediumpurple')
