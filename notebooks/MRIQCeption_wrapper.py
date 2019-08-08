@@ -48,13 +48,12 @@ def main(argv=sys.argv):
     #                                              'Format: xxxx xxxxx xxxxxx xxxxxx'),
     #                         dest='search_phrase'
     #                         )
-    # arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str,
-    #                         choices=['bold', 'T1w', 'T2w'], required=False,
-    #                         default='T1w',
-    #                         help=('Scan type to query. Can choose from bold,'
-    #                               ' T1w, or T2w.'),
-    #                         dest='scan_type'
-                            # )
+    arg_parser.add_argument('-t', metavar='SCAN_TYPE', action='store', type=str,
+                           choices=['bold', 'T1w', 'T2w'], required=True,
+                           help=('Scan type to query. Can choose from bold,'
+                                 ' T1w, or T2w.'),
+                           dest='scan_type'
+                            )
     args = arg_parser.parse_args()
 
     #################################################
@@ -68,16 +67,15 @@ def main(argv=sys.argv):
 
     #################################################
     ##          Global Variable Assignment         ##
-    #################################################    
+    #################################################
     start_time = time.time()
     time.sleep(1)
     today_date = datetime.datetime.now().strftime('%m%d%Y')
 
     # print('Querying API for ' + args.scan_type + ' scans.')
 
-
-    filter_list = ['TR > 1.0','FD < .3']
-    modality = 'bold'
+    #  filter_list = ['TR > 1.0','FD < .3']
+    #  modality = 'bold'
 
     here = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
     T1apicsv = os.path.join(here, 'demo_api', 'T1w_demo.csv')
@@ -96,7 +94,10 @@ def main(argv=sys.argv):
 
     # load and filter api csv as df #
     apidf = pd.read_csv(group_file)
-    filtered_apidf = filterIQM(,apidf,filter_list)
+
+    # Make the filter_list
+    filter_list = []
+    filtered_apidf = filterIQM(apidf, args.scan_type, filter_list)
 
     # merge dataframes together #
     vis_ready_df = merge_dfs(userdf, filtered_apidf)

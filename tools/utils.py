@@ -7,32 +7,53 @@ from xml.dom import minidom
 from json import load
 from pandas.io.json import json_normalize
 
-def filterIQM(apidf, filter_list):
-    """ Loads the API info and filters based on user-provided 
+def filterIQM(apidf, modality, filter_list):
+    """ Loads the API info and filters based on user-provided
         parameters. Filter parameters should be a list of strings
         and string formats should be "(VAR) (Operator) (Value)".
         Example: ['TR == 3.0'] or ['TR > 1.0','FD < .3']
-        Note: Each element in each string is SPACE separated! 
-    
+        Note: Each element in each string is SPACE separated!
+
     Args:
-        apidf (pandas dataframe): Pandas df of the API info. 
+        apidf (pandas dataframe): Pandas df of the API info.
+        modality ('string'): Type of MRI scan queried.
+                             Options: ['Bold' 'T1w' 'T2w'].
         filter_list = (list): List of argument strings that will
         be joined by ampersands to use pandas query function.
 
     Returns: A pandas dataframe containing data pulled from
-        the MRICQ API, but filtered to contain only your match 
+        the MRICQ API, but filtered to contain only your match
         specifications.
     """
     cols = apidf.columns
-    cols = cols.map(lambda x: x.replace(".", "_"))
+    cols = cols.map(lambda x: x.replace(".", "_").lowercase())
     apidf.columns = cols
 
     query = []
-    expected_filters = {'SNR':'snr','TSNR':'tsnr',
-                        'DVAR':'dvars_nstd','FD':'fd_mean',
-                        'FWHM':'fwhm_avg','Tesla':'bids_meta_MagneticFieldStrength',
-                        'gsr_x':'gsr_x','gsr_y':'gsr_y',
-                        'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime'}
+    mod = modality.lowercase()
+
+    if mod == 'bold':
+        expected_filters = {'snr':'snr','tsnr':'tsnr',
+                'dvar':'dvars_nstd','fd':'fd_mean',
+                'fwhm':'fwhm_avg','tesla':'bids_meta_magneticfieldstrength',
+                'gsr_x':'gsr_x','gsr_y':'gsr_y',
+                'te':'bids_meta_echotime','tr':'bids_meta_repetitiontime'}
+    elif mod == 't1w':
+        expected_filters = {'snr':'snr_total', 'snrg':'snr_gm', 'srnw':'snr_wm',
+                'snrc':'snr_csf', 'cnr':'cnr', 'efc':'efc',
+                'fwhm':'fwhm_avg','tesla':'bids_meta_magneticfieldstrength',
+                'te':'bids_meta_echotime','tr':'bids_meta_repetitiontime'}
+    elif mod == 't2w':
+        expected_filters = {'snr':'snr_total', 'snrg':'snr_gm', 'srnw':'snr_wm',
+                'snrc':'snr_csf', 'cnr':'cnr', 'efc':'efc',
+                'fwhm':'fwhm_avg','tesla':'bids_meta_magneticfieldstrength',
+                'te':'bids_meta_echotime','tr':'bids_meta_repetitiontime'}
+
+    if all(isinstance(x,str) for x in filter_list):
+        filter_list = [x.lower() for x in filter_list]
+    else:
+        raise ValueError('filter_list contains items other than strings')
+
     filter_check = list(expected_filters.keys())
 
     for filt in filter_list:
@@ -42,6 +63,8 @@ def filterIQM(apidf, filter_list):
         if var in filter_check:
             filt_str = expected_filters[var] + op + val
             query.append(filt_str)
+        else:
+            raise Exception(var + 'is not found in the available IQMs')
 
     filtered_df = apidf.query(' & '.join(query))
 
@@ -49,17 +72,17 @@ def filterIQM(apidf, filter_list):
 
 # Functions are in alphabetical order, because lazy! ##
 def load_groupfile(infile_path):
-    """ Load your MRIQC group tsv file and return a pandas df to then 
+    """ Load your MRIQC group tsv file and return a pandas df to then
         use for visualizations or any other functions down the line.
-    
+
     Args:
         infile_path (string): Path to your MRIQC tsv that you got
         from running MRIQC on your LOCAL group. However, this can
-        be used to load any other downloaded/shared tsv for future 
+        be used to load any other downloaded/shared tsv for future
         integration
 
     Returns: A pandas dataframe of your tsv file that was output by
-        MRIQC. (This can also be tsv files shared or downloaded, such 
+        MRIQC. (This can also be tsv files shared or downloaded, such
         as the ABIDE example tsv available online).
     """
     name, ext = os.path.splitext(os.path.basename(infile_path))
@@ -76,13 +99,13 @@ def merge_dfs(userdf, filtered_apidf):
     """ Merges the user/group dataframe and the filtered API dataframe
         while adding a groupby variable. Name is "SOURCE". User entries
         are "USER" and API entries are "API".
-    
+
     Args:
         udf (pandas df): User MRIQC tsv converted to pandas dataframe
         apidf (pandas df): API info, filtered and stored in padas
             dataframe.
 
-    Returns: A merged pandas dataframe containing the user group info and 
+    Returns: A merged pandas dataframe containing the user group info and
         the filtered API info. A "groupby" header called "SOURCE" is added
         with a "USER" or "API" entry for easy sorting/splitting.
     """
@@ -94,14 +117,14 @@ def merge_dfs(userdf, filtered_apidf):
 
 def query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.
-    
+
     Args:
         stype (string): Scan type. Supported: 'bold','T1w',or 'T2w'.
         filters (list): List of conditional phrases consisting of:
             keyword to query + conditional argument + value. All
             conditions checked against API as and phrases.
 
-    Returns: A pandas dataframe of all MRIQC entries that satisfy the 
+    Returns: A pandas dataframe of all MRIQC entries that satisfy the
         contitional statement (keyword condition value).
     """
     url_root = 'https://mriqc.nimh.nih.gov/api/v1/' + stype
