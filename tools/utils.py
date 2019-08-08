@@ -7,6 +7,45 @@ from xml.dom import minidom
 from json import load
 from pandas.io.json import json_normalize
 
+def filterIQM(apidf, filter_list):
+    """ Loads the API info and filters based on user-provided 
+        parameters. Filter parameters should be a list of strings
+        and string formats should be "(VAR) (Operator) (Value)".
+        Example: ['TR == 3.0'] or ['TR > 1.0','FD < .3']
+        Note: Each element in each string is SPACE separated! 
+    
+    Args:
+        apidf (pandas dataframe): Pandas df of the API info. 
+        filter_list = (list): List of argument strings that will
+        be joined by ampersands to use pandas query function.
+
+    Returns: A pandas dataframe containing data pulled from
+        the MRICQ API, but filtered to contain only your match 
+        specifications.
+    """
+    cols = apidf.columns
+    cols = cols.map(lambda x: x.replace(".", "_"))
+    apidf.columns = cols
+
+    query = []
+    expected_filters = {'SNR':'snr','TSNR':'tsnr',
+                        'DVAR':'dvars_nstd','FD':'fd_mean',
+                        'FWHM':'fwhm_avg','Tesla':'bids_meta_MagneticFieldStrength',
+                        'gsr_x':'gsr_x','gsr_y':'gsr_y',
+                        'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime'}
+    filter_check = list(expected_filters.keys())
+
+    for filt in filter_list:
+        var = filt.split(' ')[0]
+        op = filt.split(' ')[1]
+        val = filt.split(' ')[2]
+        if var in filter_check:
+            filt_str = expected_filters[var] + op + val
+            query.append(filt_str)
+
+    filtered_df = apidf.query(' & '.join(query))
+
+    return filtered_df
 
 # Functions are in alphabetical order, because lazy! ##
 def load_groupfile(infile_path):
@@ -25,16 +64,37 @@ def load_groupfile(infile_path):
     """
     name, ext = os.path.splitext(os.path.basename(infile_path))
     if ext == '.tsv':
-        sep = "'\t'"
         df = pd.read_table(infile_path, header=0)
     elif ext == '.csv':
-        sep = "','"
         df = pd.read_csv(infile_path, header=0)
     else:
         raise ValueError("File type not supported: " + ext)
 
     return df
 
+def merge_dfs(userdf, filtered_apidf):
+    """ Merges the user/group dataframe and the filtered API dataframe
+        while adding a groupby variable. Name is "SOURCE". User entries
+        are "USER" and API entries are "API".
+    
+    Args:
+        udf (pandas df): User MRIQC tsv converted to pandas dataframe
+        apidf (pandas df): API info, filtered and stored in padas
+            dataframe.
+
+    Returns: A merged pandas dataframe containing the user group info and 
+        the filtered API info. A "groupby" header called "SOURCE" is added
+        with a "USER" or "API" entry for easy sorting/splitting.
+    """
+    userdf['SOURCE']='USER'
+    filtered_apidf['SOURCE']='API'
+    filtered_apidf.rename(columns={'_id': 'bids_name'}, inplace=True)
+
+    merged_df = pd.concat([userdf,filtered_apidf], sort=True).fillna(0)
+    # merged_df['_INDEX']=merged_df.index
+
+    # merged_df_with_index = pd.DataFrame(index = merged_df.index, data= merged_df)
+    return merged_df
 
 def query_api(stype, filters):
     """ Query the MRIQC API using 3 element conditional statement.
