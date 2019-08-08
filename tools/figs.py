@@ -17,7 +17,6 @@ def make_vio_plot(data, IQM_to_plot):
     the API data.
     
     '''
-    
     print('Loading in dataframe...')
     
     # variable names we might want to list
@@ -31,6 +30,7 @@ def make_vio_plot(data, IQM_to_plot):
                     'summary_fg_p95','summary_fg_stdv','tsnr']
     
     # add stuff about whether or not variables were defined
+    
     if len(IQM_to_plot) == 0:
         variables = qc_var_list
         print('Loading all variables...')
@@ -40,23 +40,25 @@ def make_vio_plot(data, IQM_to_plot):
                 print('Variable name not recognized.')
                 sys.exit()
             else:
-                variables = str(IQM_to_plot)
-                print('Loading variables: %s' % type(variables))
+                pass
+        variables = IQM_to_plot
+        print('Loading variables: %s' %variables)
+    
+    if not outliers:
+        print('Please specify whether you want api outliers in your visualization or not')
     
     # source: user/api
     # change the file from short format to long format
-    df_long = pd.melt(data,id_vars='bids_name',var_name='var',value_name='values')
+    df_long = pd.melt(data, id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
 
     for var_name in variables:
+        # identify some outliers
+        
         # create a split violin plot for a single variable
         fig = go.Figure()
-        
-        # the 'my data' variable is a subset of the original df for plotting reasons
-        # replace it with the actual user data
-        user_data = df_long[df_long['var'] == var_name][20:40]
-        
-        fig.add_trace(go.Violin(x=user_data[['var']][user_data['var']==var_name]['var'],
-                        y=user_data[['values']][user_data['var']==var_name]['values'],
+               
+        fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var'],
+                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
                         legendgroup='user data', scalegroup='user data', name='user data',
                         side='negative',
                         points='all',
@@ -64,16 +66,20 @@ def make_vio_plot(data, IQM_to_plot):
                         jitter=0.1,
                         line_color='lightseagreen')
              )
-        fig.add_trace(go.Violin(x=df_long[['var']][df_long['var']==var_name]['var'],
-                        y=df_long[['values']][df_long['var']==var_name]['values'],
+        fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
+                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
                         legendgroup='api', scalegroup='api', name='api',
                         side='positive',
                         line_color='mediumpurple')
              )
         # update characteristics shared by all traces
         fig.update_traces(meanline_visible=True,
-                  box_visible=True) #scale violin plot area with total count
+                  box_visible=True)
+        fig.update_layout(autosize=False,
+                         width=600,
+                         height=600)
         fig.show()
+        
 
         #print description of figure
         #print(dictionary.get(var_name))
