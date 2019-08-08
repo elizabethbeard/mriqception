@@ -30,6 +30,7 @@ def make_vio_plot(data, IQM_to_plot):
                     'summary_fg_p95','summary_fg_stdv','tsnr']
     
     # add stuff about whether or not variables were defined
+    
     if len(IQM_to_plot) == 0:
         variables = qc_var_list
         print('Loading all variables...')
@@ -42,18 +43,19 @@ def make_vio_plot(data, IQM_to_plot):
                 pass
         variables = IQM_to_plot
         print('Loading variables: %s' %variables)
-
+    
+    if not outliers:
+        print('Please specify whether you want api outliers in your visualization or not')
+    
     # source: user/api
     # change the file from short format to long format
-    df_long = pd.melt(data,id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
+    df_long = pd.melt(data, id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
 
     for var_name in variables:
+        # identify some outliers
+        
         # create a split violin plot for a single variable
         fig = go.Figure()
-
-        # # the 'my data' variable is a subset of the original df for plotting reasons
-        # # replace it with the actual user data
-        # user_data = df_long[df_long['var'] == var_name][20:40]
                
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var'],
                         y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
@@ -72,7 +74,10 @@ def make_vio_plot(data, IQM_to_plot):
              )
         # update characteristics shared by all traces
         fig.update_traces(meanline_visible=True,
-                  box_visible=True) #scale violin plot area with total count
+                  box_visible=True)
+        fig.update_layout(autosize=False,
+                         width=600,
+                         height=600)
         fig.show()
         
 
