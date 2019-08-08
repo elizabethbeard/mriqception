@@ -1,55 +1,10 @@
 iqm_name,description,image_type,measure_type
-aor,"AFNI'S outlier ratio. Mean fraction of outliers per fMRI volume, from AFNI's 3dToutcount.
-Higher values indicate lower quality.",func,other
-aqi,"AFNI's quality index. Mean quality index, from AFNI's 3dTqual.
-Values close to 0 indicate higher quality.",func,other
-cjv,"Coefficient of joint variation between white matter and gray matter.
-Higher values indicate more head motion and/or intensity non-uniformity artifacts.",anat,noise
-cnr,"Contrast-to-noise ratio, reflecting separation between GM & WM.
-Higher values indicate higher quality.",anat,noise
-dummy_trs,Number of volumes in the beginning of the fMRI timeseries identified as non-steady state.,func,other
-dvars_nstd,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
-Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal
-dvars_std,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
-Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal
-dvars_vstd,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
-Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal
-efc,"Shannon entropy-focus criterion. 
-Higher values indicate more ghosting and/or head motion blurring. ",func,spatial
-efc,"Shannon entropy-focus criterion. 
-Higher values indicate more ghosting and/or head motion blurring. ",anat,spatial
-fber,"Foreground-background energy ratio: the variance of voxels inside the brain divided by the variance of voxels outside the brain.
-Higher values indicate higher quality.",func,spatial
-fber,"Foreground-background energy ratio: the variance of voxels inside the brain divided by the variance of voxels outside the brain.
-Higher values indicate higher quality.",anat,spatial
-fd_mean,"Mean framewise displacement: measure of subject head motion, which compares the motion between the current and previous volumes.
-Higher values indicate lower quality.",func,motion
-fd_num,"Number of timepoints with framewise displacement >0.2mm.
-Higher values indicate lower quality.",func,motion
-fd_perc,"Percent of timepoints with framewise displacement >0.2mm.
-Higher values indicate lower quality.",func,motion
-fwhm_avg,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",func,spatial
-fwhm_avg,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",anat,spatial
-fwhm_x,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",func,spatial
-fwhm_x,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",anat,spatial
-fwhm_y,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",func,spatial
-fwhm_y,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",anat,spatial
-fwhm_z,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",func,spatial
-fwhm_z,"Image blurriness (full-width half-maximum).
-Higher values indicate a blurrier image.",anat,spatial
-gcor,"Global correlation: Average correlation of all pairs of voxel time series inside of the brain. Illustrates differences between data due to motion/physiological noise/imaging artifacts.
-Values closer to zero are better.",func,temporal
-gsr_x,"Ghost-to-signal ratio along the x or y encoding axes.
-Higher values indicate lower quality.",func,other
-gsr_y,"Ghost-to-signal ratio along the x or y encoding axes.
-Higher values indicate lower quality.",func,other
+inu_med,"Intensity non-uniformity (bias field) median.
+Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact
+inu_range,"Intensity non-uniformity (bias field) range.
+Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact
+wm2max,"White matter-to-maximum intensity ratio: captures skewed distributions within the WM mask, caused by fat and vascular-related hyperintensities.
+Ideal values fall within the interval [0.6, 0.8].",anat,artifact
 icvs_csf,"
 Intracranial volume fraction in CSF.
 Values should move within a normative range.",anat,descriptive
@@ -59,38 +14,6 @@ Values should move within a normative range.",anat,descriptive
 icvs_wm,"
 Intracranial volume fraction in white matter.
 Values should move within a normative range.",anat,descriptive
-inu_med,"Intensity non-uniformity (bias field) median.
-Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact
-inu_range,"Intensity non-uniformity (bias field) range.
-Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact
-qi_1,"Mortamet's quality index 1. The proportion of voxels outside the brain with artifacts to the total number of voxels outside the brain.
-Higher values indicate lower quality.",anat,other
-qi_2,"Mortamet's quality index 2. A quality index accounting for effects of both clustered and subtle artifacts in the air background.
-Higher values indicate lower quality.",anat,noise
-rpve_csf,"Residual partial volume error in CSF.
-Higher values indicate lower quality.",anat,other
-rpve_gm,"Residual partial volume error in grey matter.
-Higher values indicate lower quality.",anat,other
-rpve_wm,"Residual partial volume error in white matter.
-Higher values indicate lower quality.",anat,other
-snr,"Signal-to-noise ratio within the tissue mask.
-Higher values indicate higher quality.",func,noise
-snr_csf,"Signal-to-noise ratio within the CSF mask.
-Higher values indicate higher quality.",anat,noise
-snr_gm,"Signal-to-noise ratio within the grey matter mask.
-Higher values indicate higher quality.",anat,noise
-snr_total,"Signal-to-noise ratio within the total mask.
-Higher values indicate higher quality.",anat,noise
-snr_wm,"Signal-to-noise ratio within the white matter mask.
-Higher values indicate higher quality.",anat,noise
-snrd_csf,"Dietrich et al. (2007)'s signal-to-noise ratio in CSF.
-Higher values indicate higher quality.",anat,noise
-snrd_gm,"Dietrich et al. (2007)'s signal-to-noise ratio in grey matter.
-Higher values indicate higher quality.",anat,noise
-snrd_total,"Dietrich et al. (2007)'s signal-to-noise ratio (total).
-Higher values indicate higher quality.",anat,noise
-snrd_wm,"Dietrich et al. (2007)'s signal-to-noise ratio in white matter.
-Higher values indicate higher quality.",anat,noise
 summary_bg_k,Summary statistics for the image background.,func,descriptive
 summary_bg_k,Summary statistics for average intensities in the image background.,anat,descriptive
 summary_bg_mad,Summary statistics for the image background.,func,descriptive
@@ -139,13 +62,90 @@ summary_wm_n,Summary statistics for average intensities in WM.,anat,descriptive
 summary_wm_p05,Summary statistics for average intensities in WM.,anat,descriptive
 summary_wm_p95,Summary statistics for average intensities in WM.,anat,descriptive
 summary_wm_stdv,Summary statistics for average intensities in WM.,anat,descriptive
+fd_mean,"Mean framewise displacement: measure of subject head motion, which compares the motion between the current and previous volumes.
+Higher values indicate lower quality.",func,motion
+fd_num,"Number of timepoints with framewise displacement >0.2mm.
+Higher values indicate lower quality.",func,motion
+fd_perc,"Percent of timepoints with framewise displacement >0.2mm.
+Higher values indicate lower quality.",func,motion
+cjv,"Coefficient of joint variation between white matter and gray matter.
+Higher values indicate more head motion and/or intensity non-uniformity artifacts.",anat,noise
+cnr,"Contrast-to-noise ratio, reflecting separation between GM & WM.
+Higher values indicate higher quality.",anat,noise
+qi_2,"Mortamet's quality index 2. A quality index accounting for effects of both clustered and subtle artifacts in the air background.
+Higher values indicate lower quality.",anat,noise
+snr,"Signal-to-noise ratio within the tissue mask.
+Higher values indicate higher quality.",func,noise
+snr_csf,"Signal-to-noise ratio within the CSF mask.
+Higher values indicate higher quality.",anat,noise
+snr_gm,"Signal-to-noise ratio within the grey matter mask.
+Higher values indicate higher quality.",anat,noise
+snr_total,"Signal-to-noise ratio within the total mask.
+Higher values indicate higher quality.",anat,noise
+snr_wm,"Signal-to-noise ratio within the white matter mask.
+Higher values indicate higher quality.",anat,noise
+snrd_csf,"Dietrich et al. (2007)'s signal-to-noise ratio in CSF.
+Higher values indicate higher quality.",anat,noise
+snrd_gm,"Dietrich et al. (2007)'s signal-to-noise ratio in grey matter.
+Higher values indicate higher quality.",anat,noise
+snrd_total,"Dietrich et al. (2007)'s signal-to-noise ratio (total).
+Higher values indicate higher quality.",anat,noise
+snrd_wm,"Dietrich et al. (2007)'s signal-to-noise ratio in white matter.
+Higher values indicate higher quality.",anat,noise
+aor,"AFNI'S outlier ratio. Mean fraction of outliers per fMRI volume, from AFNI's 3dToutcount.
+Higher values indicate lower quality.",func,other
+aqi,"AFNI's quality index. Mean quality index, from AFNI's 3dTqual.
+Values close to 0 indicate higher quality.",func,other
+dummy_trs,Number of volumes in the beginning of the fMRI timeseries identified as non-steady state.,func,other
+gsr_x,"Ghost-to-signal ratio along the x or y encoding axes.
+Higher values indicate lower quality.",func,other
+gsr_y,"Ghost-to-signal ratio along the x or y encoding axes.
+Higher values indicate lower quality.",func,other
+qi_1,"Mortamet's quality index 1. The proportion of voxels outside the brain with artifacts to the total number of voxels outside the brain.
+Higher values indicate lower quality.",anat,other
+rpve_csf,"Residual partial volume error in CSF.
+Higher values indicate lower quality.",anat,other
+rpve_gm,"Residual partial volume error in grey matter.
+Higher values indicate lower quality.",anat,other
+rpve_wm,"Residual partial volume error in white matter.
+Higher values indicate lower quality.",anat,other
 tpm_overlap_csf,"TPM overlap: How well the CSF tissue probability maps overlap with those from the MNI ICBM 2009 template.
 Higher values indicate better spatial normalization.",anat,other
 tpm_overlap_gm,"TPM overlap: How well the grey matter tissue probability maps overlap with those from the MNI ICBM 2009 template.
 Higher values indicate better spatial normalization.",anat,other
 tpm_overlap_wm,"TPM overlap: How well the white matter tissue probability maps overlap with those from the MNI ICBM 2009 template.
 Higher values indicate better spatial normalization.",anat,other
+efc,"Shannon entropy-focus criterion. 
+Higher values indicate more ghosting and/or head motion blurring. ",func,spatial
+efc,"Shannon entropy-focus criterion. 
+Higher values indicate more ghosting and/or head motion blurring. ",anat,spatial
+fber,"Foreground-background energy ratio: the variance of voxels inside the brain divided by the variance of voxels outside the brain.
+Higher values indicate higher quality.",func,spatial
+fber,"Foreground-background energy ratio: the variance of voxels inside the brain divided by the variance of voxels outside the brain.
+Higher values indicate higher quality.",anat,spatial
+fwhm_avg,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",func,spatial
+fwhm_avg,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial
+fwhm_x,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",func,spatial
+fwhm_x,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial
+fwhm_y,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",func,spatial
+fwhm_y,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial
+fwhm_z,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",func,spatial
+fwhm_z,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial
+dvars_nstd,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
+Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal
+dvars_std,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
+Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal
+dvars_vstd,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
+Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal
+gcor,"Global correlation: Average correlation of all pairs of voxel time series inside of the brain. Illustrates differences between data due to motion/physiological noise/imaging artifacts.
+Values closer to zero are better.",func,temporal
 tsnr,"Temporal signal-to-noise ratio taking into account mean signal over time.
 Higher values indicate higher quality.",func,temporal
-wm2max,"White matter-to-maximum intensity ratio: captures skewed distributions within the WM mask, caused by fat and vascular-related hyperintensities.
-Ideal values fall within the interval [0.6, 0.8].",anat,artifact
