@@ -51,7 +51,16 @@ def make_vio_plot(data, IQM_to_plot):
     # change the file from short format to long format
     df_long = pd.melt(data, id_vars=['bids_name','SOURCE'],var_name='var',value_name='values')
 
+
+    # make plotting dictionary for family colors
+    # artifact = , noise = , temporal = , spatial =, motion = , other = 
+    plot_dict = {'fwhm_avg': ('red'), 'fber': ('blue')}
+    #the appropriate color for that var is: plot_dict['var'][0]
+    
     for var_name in variables:
+
+        family_color = plot_dict[var_name]
+
         # identify some outliers
         
         # create a split violin plot for a single variable
@@ -64,13 +73,13 @@ def make_vio_plot(data, IQM_to_plot):
                         points='all',
                         pointpos=-0.5, # where to position points
                         jitter=0.1,
-                        line_color='lightseagreen')
+                        line_color=family_color)
              )
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
                         y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
                         legendgroup='api', scalegroup='api', name='api',
                         side='positive',
-                        line_color='mediumpurple')
+                        line_color='gray')
              )
         # update characteristics shared by all traces
         fig.update_traces(meanline_visible=True,
