@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-### This is my new branch 
-
-
 ### IMPORTS GO HERE ###
 import pandas as pd
 import plotly.graph_objects as go
 import sys
 
-def make_vio_plot(data, IQM_to_plot, data_descriptors):
+#def make_vio_plot(data, IQM_to_plot, data_descriptors):
+def make_vio_plot(data, IQM_to_plot):
     ''' Make a violion plot of the api and user QC metrics.
     
     Args:
@@ -50,7 +48,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
     # data descriptor stuff
     print('Loading in data descriptors...')
     
-    descriptors = pd.read_csv(data_descriptors)
+    #descriptors = pd.read_csv(data_descriptors)
     
     #if not outliers:
     #    print('Please specify whether you want api outliers in your visualization or not')
