@@ -58,13 +58,42 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
 
 
     # make plotting dictionary for family colors
-    # artifact = , noise = , temporal = , spatial =, motion = , other = 
-    plot_dict = {'fwhm_avg': ('red'), 'fber': ('blue')}
-    #the appropriate color for that var is: plot_dict['var'][0]
+    # mediumpurple - lightskyblue - red is #A52A2A - orange is #D2691E - yellow is #DAA520 - lightseafoamgreen - 
+    plot_dict = {'tsnr': ('#D2691E'), 'gcor': ('#D2691E'), 'dvars_vstd': ('#D2691E'), 'dvars_std': ('#D2691E'), # temporal
+                 'dvars_nstd': ('#D2691E'), 
+                 'fwhm_x': ('#DAA520'), 'fwhm_y': ('#DAA520'), 'fwhm_z': ('#DAA520'), 'fwhm_avg': ('#DAA520'), #spatial
+                 'fber': ('#DAA520'), 'efc': ('#DAA520'), 
+                 'cjv': ('#A52A2A'), 'cnr': ('#A52A2A'), 'qi_2': ('#A52A2A'), 'snr': ('#A52A2A'), # noise
+                 'snr_csf': ('#A52A2A'), 'snr_gm': ('#A52A2A'), 'snr_wm': ('#A52A2A'), 'snr_total': ('#A52A2A'),
+                 'snrd_csf': ('#A52A2A'), 'snrd_gm': ('#A52A2A'), 'snrd_wm': ('#A52A2A'), 
+                 'fd_mean': ('lightseafoamgreen'), 'fd_num': ('lightseafoamgreen'), 'fd_perc': ('lightseafoamgreen'), # motion IQMs
+                 'inu_med': ('lightskyblue'), 'inu_range': ('lightskyblue'), 'wm2max': ('lightskyblue'), # artifact IQMs
+                 'aor': ('mediumpurple'), 'aqi': ('mediumpurple'), 'dummy_trs': ('mediumpurple'), 'gsr_x': ('mediumpurple'), # other
+                 'gsr_y': ('mediumpurple'), 'qi_1': ('mediumpurple'), 'rpve_csf': ('mediumpurple'), 'rpve_gm': ('mediumpurple'),
+                 'rpve_wm': ('mediumpurple'), 'tpm_overlap_csf': ('mediumpurple'), 'tpm_overlap_gm': ('mediumpurple'),
+                 'tpm_overlap_wm': ('mediumpurple'), 
+                 'icvs_csf': ('#00008B'), 'icvs_gm': ('#00008B'), 'icvs_wm': ('#00008B'), # descriptive
+                 'summary_bg_k': ('#00008B'), 'summary_bg_mad': ('#00008B'), 'summary_bg_mean': ('#00008B'),
+                 'summary_bg_median': ('#00008B'), 'summary_bg_n': ('#00008B'), 'summary_bg_p05': ('#00008B'),
+                 'summary_bg_p95': ('#00008B'), 'summary_bg_stdv': ('#00008B'), 
+                 'summary_csf_k': ('#00008B'), 'summary_csf_mad': ('#00008B'), 'summary_csf_mean': ('#00008B'),
+                 'summary_csf_median': ('#00008B'), 'summary_csf_n': ('#00008B'), 'summary_csf_p05': ('#00008B'),
+                 'summary_csf_p95': ('#00008B'), 'summary_csf_stdv': ('#00008B'), 
+                 'summary_fg_k': ('#00008B'), 'summary_fg_mad': ('#00008B'), 'summary_fg_mean': ('#00008B'),
+                 'summary_fg_median': ('#00008B'), 'summary_fg_n': ('#00008B'), 'summary_fg_p05': ('#00008B'),
+                 'summary_fg_p95': ('#00008B'), 'summary_fg_stdv': ('#00008B'), 
+                 'summary_gm_k': ('#00008B'), 'summary_gm_mad': ('#00008B'), 'summary_gm_mean': ('#00008B'),
+                 'summary_gm_median': ('#00008B'), 'summary_gm_n': ('#00008B'), 'summary_gm_p05': ('#00008B'),
+                 'summary_gm_p95': ('#00008B'), 'summary_gm_stdv': ('#00008B'), 
+                 'summary_wm_k': ('#00008B'), 'summary_wm_mad': ('#00008B'), 'summary_wm_mean': ('#00008B'),
+                 'summary_wm_median': ('#00008B'), 'summary_wm_n': ('#00008B'), 'summary_wm_p05': ('#00008B'),
+                 'summary_wm_p95': ('#00008B'), 'summary_wm_stdv': ('#00008B') 
+                 }
+    
     
     for var_name in variables:
 
-        family_color = plot_dict[var_name]
+        #family_color = plot_dict[var_name] # plot same-family IQMs in same color
 
         # identify some outliers
         
@@ -78,13 +107,13 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
                         points='all',
                         pointpos=-0.5, # where to position points
                         jitter=0.1,
-                        line_color=family_color)
+                        line_color=plot_dict[var_name])
              )
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
                         y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
                         legendgroup='api', scalegroup='api', name='api',
                         side='positive',
-                        line_color='gray')
+                        line_color='rgb(58,54,54)')
              )
         # update characteristics shared by all traces
         fig.update_traces(meanline_visible=True,
