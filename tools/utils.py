@@ -27,12 +27,51 @@ def filterIQM(apidf, filter_list):
     cols = cols.map(lambda x: x.replace(".", "_"))
     apidf.columns = cols
 
+    ## FOR LATER: ##
+    # CONTROL WHICH EXPECTED VARIABLE LIST YOU CHECK DEPENDING
+    # ON THE MODALITY TYPE. (This will be useless if it's a checkbox
+    # or a pull down in a web interface...)
+
+    # bold_filters = {'SNR':'snr','TSNR':'tsnr',
+    #                 'DVAR':'dvars_nstd','FD':'fd_mean',
+    #                 'FWHM':'fwhm_avg','Tesla':'bids_meta_MagneticFieldStrength',
+    #                 'gsr_x':'gsr_x','gsr_y':'gsr_y',
+    #                 'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime'}
+
+    # t1_filters = {'SNR_TOTAL':'snr_total',
+    #               'SNR_GM':'snr_gm',
+    #               'SNR_WM':'snr_wm',
+    #               'SNR_CSF':'snr_csf',
+    #               'CNR':'cnr',
+    #               'EFC':'efc',
+    #               'FWHM':'fwhm_avg',
+    #               'TE':'bids_meta_EchoTime',
+    #               'TR':'bids_meta_RepetitionTime',
+    #               'Tesla':'bids_meta_MagneticFieldStrength'
+    #               }
+
+    # t2_filters = {
+    #              'SNR_TOTAL':'snr_total',
+    #              'SNR_GM':'snr_gm',
+    #              'SNR_WM':'snr_wm',
+    #              'SNR_CSF':'snr_csf',
+    #              'CNR':'cnr',
+    #              'EFC':'efc'
+    #              }
+
     query = []
-    expected_filters = {'SNR':'snr','TSNR':'tsnr',
+    expected_filters = {'SNR':'snr','TSNR':'tsnr','SNR_WM':'snr_wm',
+                        'SNR_CSF':'snr_csf','CNR':'cnr','EFC':'efc',
                         'DVAR':'dvars_nstd','FD':'fd_mean',
                         'FWHM':'fwhm_avg','Tesla':'bids_meta_MagneticFieldStrength',
                         'gsr_x':'gsr_x','gsr_y':'gsr_y',
-                        'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime'}
+                        'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime',
+                        'SNR_TOTAL':'snr_total','SNR_GM':'snr_gm','SNR_WM':'snr_wm',
+                        'SNR_CSF':'snr_csf','CNR':'cnr','EFC':'efc','FWHM':'fwhm_avg',
+                        'TE':'bids_meta_EchoTime','TR':'bids_meta_RepetitionTime',
+                        'Tesla':'bids_meta_MagneticFieldStrength'
+                        }
+
     filter_check = list(expected_filters.keys())
 
     for filt in filter_list:
