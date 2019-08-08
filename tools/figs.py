@@ -96,7 +96,9 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     var_name = variables[0] # the default first variable
     API_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
     
+
     def remove_outliers_from_api(API_data,outliers):
+
         # identify some outliers
         if outliers: 
             q75, q25 = np.percentile(API_data, [75 ,25])
