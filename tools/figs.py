@@ -66,12 +66,12 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
                  'cjv': ('#A52A2A'), 'cnr': ('#A52A2A'), 'qi_2': ('#A52A2A'), 'snr': ('#A52A2A'), # noise
                  'snr_csf': ('#A52A2A'), 'snr_gm': ('#A52A2A'), 'snr_wm': ('#A52A2A'), 'snr_total': ('#A52A2A'),
                  'snrd_csf': ('#A52A2A'), 'snrd_gm': ('#A52A2A'), 'snrd_wm': ('#A52A2A'), 
-                 'fd_mean': ('lightseafoamgreen'), 'fd_num': ('lightseafoamgreen'), 'fd_perc': ('lightseafoamgreen'), # motion IQMs
-                 'inu_med': ('lightskyblue'), 'inu_range': ('lightskyblue'), 'wm2max': ('lightskyblue'), # artifact IQMs
-                 'aor': ('mediumpurple'), 'aqi': ('mediumpurple'), 'dummy_trs': ('mediumpurple'), 'gsr_x': ('mediumpurple'), # other
-                 'gsr_y': ('mediumpurple'), 'qi_1': ('mediumpurple'), 'rpve_csf': ('mediumpurple'), 'rpve_gm': ('mediumpurple'),
-                 'rpve_wm': ('mediumpurple'), 'tpm_overlap_csf': ('mediumpurple'), 'tpm_overlap_gm': ('mediumpurple'),
-                 'tpm_overlap_wm': ('mediumpurple'), 
+                 'fd_mean': ('#66CDAA'), 'fd_num': ('#66CDAA'), 'fd_perc': ('#66CDAA'), # motion IQMs
+                 'inu_med': ('#6495ED'), 'inu_range': ('#6495ED'), 'wm2max': ('#6495ED'), # artifact IQMs
+                 'aor': ('#9932CC'), 'aqi': ('#9932CC'), 'dummy_trs': ('#9932CC'), 'gsr_x': ('#9932CC'), # other
+                 'gsr_y': ('#9932CC'), 'qi_1': ('#9932CC'), 'rpve_csf': ('#9932CC'), 'rpve_gm': ('#9932CC'),
+                 'rpve_wm': ('#9932CC'), 'tpm_overlap_csf': ('#9932CC'), 'tpm_overlap_gm': ('#9932CC'),
+                 'tpm_overlap_wm': ('#9932CC'), 
                  'icvs_csf': ('#00008B'), 'icvs_gm': ('#00008B'), 'icvs_wm': ('#00008B'), # descriptive
                  'summary_bg_k': ('#00008B'), 'summary_bg_mad': ('#00008B'), 'summary_bg_mean': ('#00008B'),
                  'summary_bg_median': ('#00008B'), 'summary_bg_n': ('#00008B'), 'summary_bg_p05': ('#00008B'),
