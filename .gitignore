@@ -1,5 +1,6 @@
 .DS_Store
 dvd_testing.py
+test_data/bold_all.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
