@@ -121,8 +121,8 @@ def main(argv=sys.argv):
     filtered_apidf = filterIQM(apidf, args.scan_type, args.filter_list)
 
     # merge dataframes together #
-    #  vis_ready_df = merge_dfs(userdf, filtered_apidf)
-    return filtered_apidf
+    vis_ready_df = merge_dfs(userdf, filtered_apidf)
+    #  return filtered_apidf
 
 if __name__ == '__main__':
     sys.exit(main())
