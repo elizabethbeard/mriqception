@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 
 ### IMPORTS GO HERE ###
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import sys
 
-def make_vio_plot(data, IQM_to_plot, data_descriptors):
+def make_vio_plot(data, IQM_to_plot, data_descriptors,outliers=False):
     ''' Make a violion plot of the api and user QC metrics.
     
     Args:
         data (dataframe): a dataframe including the API and USER data. Must have a column labeled 'source' with USER or API defined.
         IQM_to_plot (list): list of IQMs to plot. If you want to view all the IQMs, leave the list empty.
         data_descriptors (path-to-csv): the path to read in a csv of variable descriptions
+        outliers (Boolean): if True, remove outliers. Default is to leave outliers in
     
     Returns: A violin plot of each MRIQC metric, comparing the user-level data to
     the API data.
@@ -47,7 +49,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
     # data descriptor stuff
     print('Loading in data descriptors...')
     
-    descriptors = pd.read_csv(data_descriptors)
+    #descriptors = pd.read_csv(data_descriptors)
     
     #if not outliers:
     #    print('Please specify whether you want api outliers in your visualization or not')
@@ -94,8 +96,17 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
     for var_name in variables:
 
         #family_color = plot_dict[var_name] # plot same-family IQMs in same color
-
+        API_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
         # identify some outliers
+        if outliers: 
+            q75, q25 = np.percentile(API_data, [75 ,25])
+            iqr = q75 - q25
+            min_out = q25-1.5*iqr 
+            max_out = q75+1.5*iqr
+            
+            #if outliers are present, replace them with NaN
+            API_data[API_data > max_out] = np.nan
+            API_data[API_data < min_out] = np.nan
         
         # create a split violin plot for a single variable
         fig = go.Figure()
@@ -110,7 +121,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors):
                         line_color=plot_dict[var_name])
              )
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
-                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
+                        y=API_data,
                         legendgroup='api', scalegroup='api', name='api',
                         side='positive',
                         line_color='rgb(58,54,54)')
