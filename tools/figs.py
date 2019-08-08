@@ -118,6 +118,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors,outliers=False):
                         points='all',
                         pointpos=-0.5, # where to position points
                         jitter=0.1,
+                        hovertext=df_long['bids_name'],
                         line_color=plot_dict[var_name])
              )
         fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
