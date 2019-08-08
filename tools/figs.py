@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+# test
+
 ### IMPORTS GO HERE ###
 import pandas as pd
 import plotly.graph_objects as go
 from ipywidgets import widgets
 import sys
-
 
 #def make_vio_plot(data, IQM_to_plot, data_descriptors):
 def make_vio_plot(data, IQM_to_plot):
@@ -110,8 +111,7 @@ def make_vio_plot(data, IQM_to_plot):
 
         dropdown_widget.observe(response, names="value")
         
-        widgets.VBox([dropdown_widget,
-              fig_widget])
+        return(dropdown_widget, fig_widget)
         
         #fig.show()
         
