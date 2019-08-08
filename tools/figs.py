@@ -8,13 +8,13 @@ import pandas as pd
 import plotly.graph_objects as go
 import sys
 
-def make_vio_plot(data, IQM_to_plot):
+def make_vio_plot(data, IQM_to_plot, data_descriptors):
     ''' Make a violion plot of the api and user QC metrics.
     
     Args:
         data (dataframe): a dataframe including the API and USER data. Must have a column labeled 'source' with USER or API defined.
-        *args (list): the list of variables a user might want displayed, defaults
-        to all variables.
+        IQM_to_plot (list): list of IQMs to plot. If you want to view all the IQMs, leave the list empty.
+        data_descriptors (path-to-csv): the path to read in a csv of variable descriptions
     
     Returns: A violin plot of each MRIQC metric, comparing the user-level data to
     the API data.
@@ -46,6 +46,11 @@ def make_vio_plot(data, IQM_to_plot):
                 pass
         variables = IQM_to_plot
         print('Loading variables: %s' %variables)
+    
+    # data descriptor stuff
+    print('Loading in data descriptors...')
+    
+    descriptors = pd.read_csv(data_descriptors)
     
     #if not outliers:
     #    print('Please specify whether you want api outliers in your visualization or not')
