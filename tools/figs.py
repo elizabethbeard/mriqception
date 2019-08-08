@@ -17,7 +17,6 @@ def make_vio_plot(data, IQM_to_plot):
     the API data.
     
     '''
-    
     print('Loading in dataframe...')
     
     # variable names we might want to list
@@ -51,7 +50,7 @@ def make_vio_plot(data, IQM_to_plot):
     for var_name in variables:
         # create a split violin plot for a single variable
         fig = go.Figure()
-        
+
         # # the 'my data' variable is a subset of the original df for plotting reasons
         # # replace it with the actual user data
         # user_data = df_long[df_long['var'] == var_name][20:40]
