@@ -65,60 +65,59 @@ def make_vio_plot(data, IQM_to_plot):
     plot_dict = {'fwhm_avg': ('red'), 'fber': ('blue')}
     #the appropriate color for that var is: plot_dict['var'][0]
     
-    for var_name in variables:
+    var_name = variables[0]
 
-        family_color = plot_dict[var_name]
+    family_color = plot_dict[var_name]
 
-        # identify some outliers
-        
-        # create a split violin plot for a single variable
-        fig = go.Figure()
-        
-        fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var'],
-                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
-                        legendgroup='user data', scalegroup='user data', name='user data',
-                        side='negative',
-                        points='all',
-                        pointpos=-0.5, # where to position points
-                        jitter=0.1,
-                        line_color=family_color)
-             )
-        fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
-                        y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
-                        legendgroup='api', scalegroup='api', name='api',
-                        side='positive',
-                        line_color='gray')
-             )
-        # update characteristics shared by all traces
-        fig.update_traces(meanline_visible=True,
-                  box_visible=True)
-        fig.update_layout(autosize=False,
-                         width=600,
-                         height=600)
-        fig.update_layout(template="plotly_white") # make background white
-        
-        # create a figure widget in order to show the dropdown menu
-        fig_widget = go.FigureWidget(fig)
-        
-        
-        # create a dropdown menu widget for the variable name
-        dropdown_widget = widgets.Dropdown(
-                options=list(df_long['var'].unique()),
-                value='fd_mean',
-                description='IQM:',
-                )
-        
-        def response(change):
-            var_name = dropdown_widget.value
-            with fig_widget.batch_update():
-                fig_widget.data[0].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var']
-                fig_widget.data[0].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values']
-                fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
-                fig_widget.data[1].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
+   
+    # create a split violin plot for a single variable
+    fig = go.Figure()
+    
+    fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var'],
+                    y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values'],
+                    legendgroup='user data', scalegroup='user data', name='user data',
+                    side='negative',
+                    points='all',
+                    pointpos=-0.5, # where to position points
+                    jitter=0.1,
+                    line_color=family_color)
+         )
+    fig.add_trace(go.Violin(x=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var'],
+                    y=df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values'],
+                    legendgroup='api', scalegroup='api', name='api',
+                    side='positive',
+                    line_color='gray')
+         )
+    # update characteristics shared by all traces
+    fig.update_traces(meanline_visible=True,
+              box_visible=True)
+    fig.update_layout(autosize=False,
+                     width=600,
+                     height=600)
+    fig.update_layout(template="plotly_white") # make background white
+    
+    # create a figure widget in order to show the dropdown menu
+    fig_widget = go.FigureWidget(fig)
+    
+    
+    # create a dropdown menu widget for the variable name
+    dropdown_widget = widgets.Dropdown(
+            options=list(df_long['var'].unique()),
+            value='fd_mean',
+            description='IQM:',
+            )
+    
+    def response(change):
+        var_name = dropdown_widget.value
+        with fig_widget.batch_update():
+            fig_widget.data[0].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var']
+            fig_widget.data[0].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values']
+            fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
+            fig_widget.data[1].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
 
-        dropdown_widget.observe(response, names="value")
-        
-        return(dropdown_widget, fig_widget)
+    dropdown_widget.observe(response, names="value")
+    
+    return(dropdown_widget, fig_widget)
         
         #fig.show()
         
