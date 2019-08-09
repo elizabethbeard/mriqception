@@ -8,7 +8,7 @@ from ipywidgets import widgets
 import sys
 
 def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
-    ''' Make a violion plot of the api and user QC metrics.
+    ''' Make a violin plot of the api and user QC metrics.
 
     Args:
         data (dataframe): a dataframe including the API and USER data. Must have a column labeled 'source' with USER or API defined.
@@ -23,14 +23,92 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     print('Loading in dataframe...')
 
     # variable names we might want to list
-    qc_var_list = ['aor','aqi','dummy_trs','dvars_nstd','dvars_std','dvars_vstd',
-                    'efc','fber','fd_mean','fd_num','fd_perc','fwhm_avg','fwhm_x','fwhm_y',
-                    'fwhm_z','gcor','gsr_x','gsr_y','size_t','size_x','size_y','size_z','snr',
-                    'spacing_tr','spacing_x','spacing_y','spacing_z','summary_bg_k','summary_bg_mad',
-                    'summary_bg_mean','summary_bg_median','summary_bg_n','summary_bg_p05',
-                    'summary_bg_p95','summary_bg_stdv','summary_fg_k','summary_fg_mad',
-                    'summary_fg_mean','summary_fg_median','summary_fg_n','summary_fg_p05',
-                    'summary_fg_p95','summary_fg_stdv','tsnr']
+    qc_var_list = ["aor",
+"aqi",
+"cjv",
+"cnr",
+"dummy_trs",
+"dvars_nstd",
+"dvars_std",
+"dvars_vstd",
+"efc",
+"fber",
+"fber",
+"fd_mean",
+"fd_num",
+"fd_perc",
+"fwhm_avg",
+"fwhm_avg",
+"fwhm_x",
+"fwhm_y",
+"fwhm_z",
+"gcor",
+"gsr_x",
+"gsr_y",
+"icvs_csf",
+"icvs_gm",
+"icvs_wm",
+"inu_med",
+"inu_range",
+"qi_1",
+"qi_2",
+"rpve_csf",
+"rpve_gm",
+"rpve_wm",
+"snr",
+"snr_csf",
+"snr_gm",
+"snr_total",
+"snr_wm",
+"snrd_csf",
+"snrd_gm",
+"snrd_total",
+"snrd_wm",
+"summary_bg_k",
+"summary_bg_mad",
+"summary_bg_mean",
+"summary_bg_median",
+"summary_bg_n",
+"summary_bg_p05",
+"summary_bg_p95",
+"summary_bg_stdv",
+"summary_csf_k",
+"summary_csf_mad",
+"summary_csf_mean",
+"summary_csf_median",
+"summary_csf_n",
+"summary_csf_p05",
+"summary_csf_p95",
+"summary_csf_stdv",
+"summary_fg_k",
+"summary_fg_mad",
+"summary_fg_mean",
+"summary_fg_median",
+"summary_fg_n",
+"summary_fg_p05",
+"summary_fg_p95",
+"summary_fg_stdv",
+"summary_gm_k",
+"summary_gm_mad",
+"summary_gm_mean",
+"summary_gm_median",
+"summary_gm_n",
+"summary_gm_p05",
+"summary_gm_p95",
+"summary_gm_stdv",
+"summary_wm_k",
+"summary_wm_mad",
+"summary_wm_mean",
+"summary_wm_median",
+"summary_wm_n",
+"summary_wm_p05",
+"summary_wm_p95",
+"summary_wm_stdv",
+"tpm_overlap_csf",
+"tpm_overlap_gm",
+"tpm_overlap_wm",
+"tsnr",
+"wm2max"]
 
     # add stuff about whether or not variables were defined
 
@@ -50,7 +128,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     # data descriptor stuff
     print('Loading in data descriptors...')
 
-    descriptors = pd.read_csv('https://github.com/elizabethbeard/mriqception/blob/master/test_data/iqm_descriptions.csv')
+    descriptors = pd.read_csv('./test_data/iqm_descriptions.csv')
 
     #if not outliers:
     #    print('Please specify whether you want api outliers in your visualization or not')
@@ -145,10 +223,9 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     # create a figure widget in order to show the dropdown menu
     fig_widget = go.FigureWidget(fig)
 
-
     # create a dropdown menu widget for the variable name
     dropdown_widget = widgets.Dropdown(
-            options=list(df_long['var'].unique()),
+            options=variables,
             value=var_name,
             description='IQM:',
             )
@@ -165,6 +242,8 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
             fig_widget.data[0].line = {'color': plot_dict.get(var_name, 'red')}
             fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
             fig_widget.data[1].y = API_data
+            definition = descriptors.loc[(descriptors['iqm_name']==var_name),"iqm_definition"].tolist()[0]
+            fig_widget.layout.annotations = [{'text': definition}]
 
 
     dropdown_widget.observe(response, names="value")
