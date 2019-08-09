@@ -226,6 +226,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     fig.update_layout(autosize=False,
                      width=700,
                      height=700,
+                     margin=go.layout.Margin(t=0),
                      xaxis=go.layout.XAxis(title = go.layout.xaxis.Title(text=definition,font=dict(size=12))))
     fig.update_yaxes(range=make_range(df_long, var_name))
     fig.update_layout(template="plotly_white") # make background white
