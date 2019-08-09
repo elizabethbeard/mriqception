@@ -246,7 +246,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
             fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
             fig_widget.data[1].y = API_data
             definition = descriptors.loc[(descriptors['iqm_name']==var_name),"iqm_definition"].tolist()[0]
-            fig_widget.layout.xaxis.title = {'text': definition}
+            fig_widget.layout.xaxis.title = {'text': definition, 'font': {'size':12}}
 
     dropdown_widget.observe(response, names="value")
 
