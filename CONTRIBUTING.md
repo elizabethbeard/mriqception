@@ -1,6 +1,6 @@
 # Contributing to MRIQCeption
 
-**Welcome to the repository for MRIQCeption!** 
+###Welcome to the repository for MRIQCeption!
 
 We're so excited you're here and would like to contribute. 
 We welcome contributions of any size and from any skill level, and would love to hear from you - opening [issues](https://github.com/elizabethbeard/mriqception/issues) and submitting [pull requests](https://github.com/elizabethbeard/mriqception/pulls) are highly encouraged!
@@ -13,7 +13,7 @@ We value reproducible, open science, and highly recommend [The Turing Way](https
 ### Guidelines
 Most of the writing that you'll do will be in [Markdown][markdown].
 You can think of Markdown as a few little symbols around your text that will allow GitHub to render the text with a little bit of formatting.
-For example, you could write words as **bold** (`**bold**`), or in _italics_ (`_italics_`), or as a [link][rick-roll] (`[link](https://https://youtu.be/dQw4w9WgXcQ)`) to another webpage.
+For example, you could write words as **bold** (`**bold**`), or in _italics_ (`_italics_`), or as a [link](https://www.youtube.com/watch?v=dQw4w9WgXcQ)(`[link](https://www.youtube.com/watch?v=dQw4w9WgXcQ)`) to another webpage.
 
 When writing in Markdown, please start each new sentence on a new line.  
 While this formats in the same way as if the new line wasn't included, it makes the [diffs produced during the pull request](https://help.github.com/en/articles/about-comparing-branches-in-pull-requests) review easier to read! :sparkles:
