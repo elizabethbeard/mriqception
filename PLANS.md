@@ -10,6 +10,6 @@ _*Ideas*_:
 * Query web API by additional conditions and combinations of parameters.
 * Integrate with <a href="https://github.com/poldracklab/mriqc">MRIQC</a> group HTML reports?
 <p>
-br>
+<br>
 <p>
 _See something else you'd like to add? [Please get in touch]!(./CONTRIBUTING.md)_
