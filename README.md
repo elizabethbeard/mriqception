@@ -1,4 +1,4 @@
-# Welcome to mriqception!
+# Welcome to MRIQCEPTION!
 
 - [Introduction](#introduction)
   * [Why mriqception exists](#why-mriqception-exists)
@@ -58,16 +58,18 @@ Importantly, mriqception does not tell you whether your IQMs are "good" or not. 
 
 ## Requirements
 
-1. You must have run <a href="https://github.com/poldracklab/mriqc">MRIQC</a> on your data least at the group level, and generated group .TSV files for each modality (T1w, T2w, BOLD) you want to look at. These are named something like `group_t1w.tsv` and/or `group_bold.tsv`, and should be located in `/<PATH TO YOUR BIDS DIRECTORY>/derivatives/mriqc/`
-2. You must have [plotly](https://plot.ly/python/getting-started/) and `pandas` installed: <br>`$ pip install pandas==0.25.0 plotly==4.0.0`
+1. You must have run <a href="https://github.com/poldracklab/mriqc">MRIQC</a> on your data least at the group level, and generated group .TSV files for each modality (T1w, T2w, BOLD) you want to look at. These are named something like `group_t1w.tsv` and/or `group_bold.tsv`, and should be located in `<PATH TO YOUR BIDS DIRECTORY>/derivatives/mriqc/`<br>
+_Note that this project was developed based on output from MRIQC v0.15.2rc1, and if MRIQC changes the names of the iqms that it returns in the TSV, you may need to change the variable names in `tools/figs.py`_
+2. You must have the [plotly](https://plot.ly/python/getting-started/) and [pandas](https://pandas.pydata.org) libraries installed: <br>`$ pip install pandas==0.25.0 plotly==4.0.0`
 
 
 # Team
 ![team mriqception](https://github.com/sarenseeley/mriqception/blob/master/docs/team_photo.png)
-
+L to R: Sofía Fernández-Lozano, Ayelet Gertsovski, Helena Gellersen, Chris Foulon, Estée Rubien-Thomas, Catherine Walsh, Stephanie DeCross, Saren Seeley, Damion Demeter, Elizabeth Beard
 
 # Resources
 
 * <a href="https://github.com/poldracklab/mriqc">MRIQC</a>
 * <a href="https://mriqc.readthedocs.io/en/stable/">MRIQC documentation</a>
+* <a href="https://neurohackademy.org">Neurohackademy</a>
 * <a href="https://github.com/neurohackademy/2019_projects">Neurohackademy 2019 projects repo</a>
