@@ -49,17 +49,18 @@ Importantly, mriqception does not tell you whether your IQMs are "good" or not. 
 
 # How to use mriqception
 
-1.
-2. Change the filepath in line XX of Presentation_Notebook.ipynb from `./test_data/group_{modality}.tsv` to the location of your MRIQC group TSV file.
+1. Open the Jupyter notebook: `$ jupyter notebook Presentation_Notebook.ipynb`
+2. Change the filepath in line XX from `./test_data/group_{modality}.tsv` to the location of your MRIQC group TSV file.
 3. Select the acquisition parameters by which you want to filter the web API query (can select multiple)
+4. Select whether you want to include outliers (calculated as )
 4. Select the IQM you want to examine from the dropdown menu
-5. 
+5.
 
 
 ## Requirements
 
 1. You must have run <a href="https://github.com/poldracklab/mriqc">MRIQC</a> on your data least at the group level, and generated group .TSV files for each modality (T1w, T2w, BOLD) you want to look at. These are named something like `group_t1w.tsv` and/or `group_bold.tsv`, and should be located in `/<PATH TO YOUR BIDS DIRECTORY>/derivatives/mriqc/`
-2. You must have [plotly](https://plot.ly/python/getting-started/) installed: <br>`pip install plotly`
+2. You must have [plotly](https://plot.ly/python/getting-started/) installed: <br>`$ pip install plotly`
 
 # Resources
 
