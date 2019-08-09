@@ -153,7 +153,6 @@ def store_page(data, out_csv=None, append=True):
 
 def pull_pages(modality, filters='', page_number=-1, max_page_results=1000,
                   out_csv=None, append=True):
-
     page_url = mriqc_url(modality, filters, page_number, max_page_results)
     request_res = request_page(page_url)
     data = request_res.json()
@@ -164,7 +163,9 @@ def pull_pages(modality, filters='', page_number=-1, max_page_results=1000,
         # continue
         print('todo')
     try:
-        last_page = re.findall("page=(\d*)&", data['_links']['last']['href'])[0]
+        last_page = re.findall(
+            r"page=(\d*)&", data['_links']['last']['href']
+        )[0]
     except KeyError:
         print("Page {} is the last page".format(page))
     '''
@@ -259,9 +260,41 @@ url = mriqc_url('bold', filter, 3, 30)
 
 r = request_page(url)
 
+op_list = ['>', '>=', '<', '<=', '=', '==', ':', '<>', '!=']
+op_list_letters = ['gt', 'ge', 'le', 'lt', 'eq', 'ne']
+op_list_letters_dollar = ['$' + s for s in op_list_letters]
+
+op_dict_invert = {
+    '$gt': ['>', 'gt'],
+    '$gte': ['>=', 'ge', '$ge'],
+    '$lt': ['<', 'lt'],
+    '$lte': ['<=', 'le', '$le'],
+    '$eq': ['=', '==', ':', 'eq'],
+    '$ne': ['<>', '!=', 'ne']
+}
+
+op_dict = dict((v, k) for k in op_dict_invert for v in op_dict_invert[k])
+for k in op_dict_invert.keys():
+    op_dict[k] = k
+
+keys = ['_updated', '_created']
+
+gt_str = '{"_updated":{"$gt":"Sun, 04 Jun 2017 04:19:33 GMT"}, "_updated":{"$lt":"Sun, 11 Jun 2017 04:19:33 GMT"}, "bids_meta.RepetitionTime":2}'
+gt_list = ["_updated>06/04/2017 04:19:33"]
+
+url = mriqc_url('bold', gt_str, max_page_results=30)
+r = request_page(url)
+r.status_code
+
+len(r.json()['_items'])
+print(str([item['_updated'] for item in r.json()['_items']]))
+print(str([item['bids_meta']['RepetitionTime'] for item in r.json()['_items']]))
+
+
 def find_date(arg):
     if isinstance(arg, str):
-        re.findall('((_updated|_created):(\d{2}-\d{2}-\d{4}))', arg)
+        re.findall(r'\"_updated\":((\d|-)+)*', gt_str)
+        re.search(r'\"_updated\":((\d|-)+)*', gt_str)
     elif isinstance(arg, list):
         print("todo")
     else:
