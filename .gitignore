@@ -1,8 +1,6 @@
-.DS_Store
-dvd_testing.py
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
+tools/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -78,7 +76,6 @@ target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-notebooks/.ipynb_checkpoints
 
 # IPython
 profile_default/
