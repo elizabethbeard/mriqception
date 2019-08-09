@@ -1,6 +1,6 @@
 # Contributing to MRIQCeption
 
-###Welcome to the repository for MRIQCeption!
+### Welcome to the repository for MRIQCeption!
 
 We're so excited you're here and would like to contribute. 
 We welcome contributions of any size and from any skill level, and would love to hear from you - opening [issues](https://github.com/elizabethbeard/mriqception/issues) and submitting [pull requests](https://github.com/elizabethbeard/mriqception/pulls) are highly encouraged!
