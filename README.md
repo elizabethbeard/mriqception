@@ -52,8 +52,8 @@ Importantly, mriqception does not tell you whether your IQMs are "good" or not. 
 
 1. Open the Jupyter notebook: `$ jupyter notebook Presentation_Notebook.ipynb`
 2. Change the filepath in line XX from `./test_data/group_{modality}.tsv` to the location of your MRIQC group TSV file.
-3. Select the acquisition parameters by which you want to filter the web API query (can select multiple).
-4. Select whether you want your plot to include outliers in the API data (really egregious outliers in the API data can obscure your data by changing the plot range).
+3. Select one or more acquisition parameters by which you want to filter the web API query: currently supports TR, TE, and Tesla.
+4. Select whether you want your plot to include outliers in the API data (lower outlier threshold calculated as `25% quartile(data) - 1.5*IQR(data)`; upper outlier threshold calculated as `75% quartile(data) + 1.5*IQR(data)`).
 4. Select the IQM you want to examine from the dropdown menu.
 
 ## Requirements
