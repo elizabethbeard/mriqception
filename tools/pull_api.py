@@ -160,6 +160,9 @@ def pull_pages(modality, filters='', page_number=-1, max_page_results=1000,
     page = data['_meta']['page']
     if len(data['_items']) == 0:
         raise ValueError("Page {} is empty".format(page))
+    if page == 0:
+        # continue
+        print('todo')
     try:
         last_page = re.findall("page=(\d*)&", data['_links']['last']['href'])[0]
     except KeyError:
@@ -192,4 +195,74 @@ def pull_pages(modality, filters='', page_number=-1, max_page_results=1000,
 # r = requests.get(url1, headers=headers)
 # r2 = requests.get(url2)
 
+url_root = 'https://mriqc.nimh.nih.gov/api/v1/bold'
+response = requests.get(
+    url_root,
+    params={'page': '3',
+            'where': 'bids_meta.MultibandAccelerationFactor==3',
+            'where': 'bids_meta.RepetitionTime==1'},
+)
+print(response.url)
+print(len(response.json()['_items']))
+print(response.json()['_meta'])
+data = response.json()
+def tata(data):
+    for v in data['_items']:
+        try:
+            r1 = v['bids_meta']['RepetitionTime']
+        except KeyError:
+            r1 = None
+        try:
+            r2 = v['bids_meta']['MultibandAccelerationFactor']
+        except KeyError:
+            r2 = None
+        try:
+            r3 = v['bids_meta']['EchoTime']
+        except KeyError:
+            r3 = None
+        if r1 is not None:
+            print(str(r1))
+        else:
+            print('None')
+        if r2 is not None:
+            print(str(r2))
+        else:
+            print('None')
+        if r3 is not None:
+            print(str(r3))
+        else:
+            print('None')
+        print()
 
+# https://mriqc.nimh.nih.gov/api/v1/bold?max_results=25&where={%22bids_meta.RepetitionTime%22:2,%22bids_meta.task_id%22:%22balloonanalogrisktask%22}
+# "Mon, 9 May 2016 12:00:00 GMT"
+# https://mriqc.nimh.nih.gov/api/v1/bold?max_results=25&where={"_updated":"Sun, 04 Jun 2017 04:19:33 GMT"}
+# https://mriqc.nimh.nih.gov/api/v1/bold?max_results=25&where={"_updated":{"$gt":"Sun, 04 Jun 2017 04:19:33 GMT"}}
+
+# https://mriqc.nimh.nih.gov/api/v1/bold?max_results=25&where={"bids_meta.RepetitionTime":{"$gt":2}}
+# https://mriqc.nimh.nih.gov/api/v1/bold?max_results=25&where={"_updated":{"&gt":"Mon, 9 May 2016 12:00:00 GMT"}}
+
+
+# date_obj = datetime.strptime(date_input, '%m/%d/%Y')
+# from datetime import datetime
+# import dateutil
+import dateparser
+
+date_input = '07/15/2017 10:55:50'
+
+date_obj = dateparser.parse(date_input)
+good_format = date_obj.strftime('%a, %d %b %Y %H:%M:%S GMT')
+print(good_format)
+
+filter = '{"_updated":{"$gt":"%s"}}' % good_format
+url = mriqc_url('bold', filter, 3, 30)
+
+r = request_page(url)
+
+def find_date(arg):
+    if isinstance(arg, str):
+        re.findall('((_updated|_created):(\d{2}-\d{2}-\d{4}))', arg)
+    elif isinstance(arg, list):
+        print("todo")
+    else:
+        raise TypeError("arg can be either a string or a list")
