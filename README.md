@@ -7,7 +7,6 @@
     + [What mriqception does NOT do](#what-mriqception-does-not-do)
 - [How to use mriqception](#how-to-use-mriqception)
   * [Requirements](#requirements)
-  * [Functions](#functions)
 - [Team](#team)
 - [Resources](#resources)
 
