@@ -8,7 +8,7 @@
 - [How to use mriqception](#how-to-use-mriqception)
   * [Requirements](#requirements)
   * [Functions](#functions)
-- [Team]
+- [Team](#team)
 - [Resources](#resources)
 
 # Introduction
