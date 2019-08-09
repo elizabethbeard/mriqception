@@ -128,7 +128,7 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     # data descriptor stuff
     print('Loading in data descriptors...')
 
-    descriptors = pd.read_csv('./test_data/iqm_descriptions.csv')
+    descriptors = pd.read_csv('./tools/iqm_descriptions.csv')
 
     #if not outliers:
     #    print('Please specify whether you want api outliers in your visualization or not')
@@ -245,11 +245,11 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
             definition = descriptors.loc[(descriptors['iqm_name']==var_name),"iqm_definition"].tolist()[0]
             fig_widget.layout.annotations = [{'text': definition}]
 
-
     dropdown_widget.observe(response, names="value")
 
     return(dropdown_widget, fig_widget)
 
 
     #print description of figure
+
     #print(dictionary.get(var_name))
