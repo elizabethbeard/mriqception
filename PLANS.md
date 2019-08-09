@@ -12,4 +12,4 @@ _*Ideas*_:
 <p>
 <br>
 <p>
-_See something else you'd like to add? [Please get in touch]!(./CONTRIBUTING.md)_
+<i>See something else you'd like to add? <a href="https://github.com/elizabethbeard/mriqception/blob/master/CONTRIBUTING.md">Please get in touch!</a></i>
