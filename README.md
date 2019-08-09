@@ -1,4 +1,4 @@
-# Welcome to mriqception!
+# Welcome to MRIQCEPTION!
 
 - [Introduction](#introduction)
   * [Why mriqception exists](#why-mriqception-exists)
@@ -7,7 +7,7 @@
     + [What mriqception does NOT do](#what-mriqception-does-not-do)
 - [How to use mriqception](#how-to-use-mriqception)
   * [Requirements](#requirements)
-  * [Functions](#functions)
+- [Team](#team)
 - [Resources](#resources)
 
 # Introduction
@@ -28,17 +28,17 @@ But in the dataset shown below, there are no obvious outliers. However, note tha
 
 ![second example: no obvious outliers on boxplot, but everyone's mean FD is >2mm](https://github.com/sarenseeley/mriqception/blob/master/docs/wikiplot2.png)
 
-Hopefully, you're actually paying attention to the Y-axis scale, but we designed mriqception to make it easier to quickly spot problems like this. The plot below shows these first two example datasets relative to 10,000 datapoints from the web API:
+Hopefully, you're actually paying attention to the Y-axis scale (if it's something like framewise displacement that has easily-interpretable units), but we designed mriqception to make it simpler to quickly spot problems like this. The plot below shows these first two example datasets relative to 10,000 datapoints from the web API:
 
 ![third example: the first two plots shown relative to 10k other simulated datapoints. the second example is obviously at the upper part of the ](https://github.com/sarenseeley/mriqception/blob/master/docs/wikiplot3.png)
 
-From this figure, you can immediately see that the second example dataset falls significantly outside of the web API data median and quartiles, indicating overall poor quality data.
+From this figure, you can immediately see that the second example dataset falls significantly outside of the web API data distribution, indicating overall poorer data quality relative to other datasets processed by MRIQC.
 
 ## What mriqception does
 
-mriqception takes user IQMs from MRIQC and plots them relative to IQMs pulled from the 200k+ images in MRIQC web API (we're going to call those  "normative" IQMs). The user has the option to filter their API query by relevant acquisition parameters, such as TR/TE.
+mriqception takes user IQMs from MRIQC and plots them relative to IQMs pulled from the 200k+ images in MRIQC web API (we're going to call those  "normative" IQMs). The user has the option to filter their API query by relevant acquisition parameters, such as tesla and TR/TE.
 
-mriqception also features a brief description of the IQM, shown as a tooltip when you mouseover the name of the IQM. We have tried to make these descriptions as user-friendly as possible.
+mriqception also features a brief description of the IQM underneath the plot. We have tried to make these descriptions as user-friendly as possible.
 
 
 ### What mriqception does NOT do
@@ -49,25 +49,26 @@ Importantly, mriqception does not tell you whether your IQMs are "good" or not. 
 
 # How to use mriqception
 
-1.
-2.
-3.
-4.
-5.
-6.
+1. Open the Jupyter notebook: `$ jupyter notebook Presentation_Notebook.ipynb`
+2. Change the filepath in line XX from `./test_data/group_{modality}.tsv` to the location of your MRIQC group TSV file.
+3. Select one or more acquisition parameters by which you want to filter the web API query: currently supports TR, TE, and Tesla.
+4. Select whether you want your plot to include outliers in the API data. Lower outlier threshold is calculated as `25% quartile(data) - 1.5*IQR(data)`; upper outlier threshold calculated as `75% quartile(data) + 1.5*IQR(data)`. **Default is to include outliers.** You can change this by changing `outliers = False` to `outliers = True` in the Jupyter notebook. The plots are interactive, so you can zoom in to rescale and more closely examine your data, if outliers in the API data are overly influencing the scale of the plot. 
+4. Select the IQM you want to examine from the dropdown menu.
 
 ## Requirements
 
-1. You must have run <a href="https://github.com/poldracklab/mriqc">MRIQC</a> on your data least at the group level, and generated group .TSV files for each modality (T1w, T2w, BOLD) you want to look at. These are named something like `group_t1w.tsv` and/or `group_bold.tsv`, and should be located in `/<PATH TO YOUR BIDS DIRECTORY>/derivatives/mriqc/`
-2. < ADD OTHER REQUIREMENTS HERE >
-3. < ADD OTHER REQUIREMENTS HERE >
+1. You must have run <a href="https://github.com/poldracklab/mriqc">MRIQC</a> on your data least at the group level, and generated group .TSV files for each modality (T1w, T2w, BOLD) you want to look at. These are named something like `group_t1w.tsv` and/or `group_bold.tsv`, and should be located in `<PATH TO YOUR BIDS DIRECTORY>/derivatives/mriqc/`<br>
+_Note that this project was developed based on output from MRIQC v0.15.2rc1, and if MRIQC changes the names of the iqms that it returns in the TSV, you may need to change the variable names in `tools/figs.py`_
+2. You must have the [plotly](https://plot.ly/python/getting-started/) and [pandas](https://pandas.pydata.org) libraries installed: <br>`$ pip install pandas==0.25.0 plotly==4.0.0`
 
-## Functions
 
-< ADD FUNCTIONS USED, W/EXPLANATIONS, HERE >
+# Team
+![team mriqception](https://github.com/sarenseeley/mriqception/blob/master/docs/team_photo.png)
+L to R: Sofía Fernández-Lozano, Ayelet Gertsovski, Helena Gellersen, Chris Foulon, Estée Rubien-Thomas, Catherine Walsh, Stephanie DeCross, Saren Seeley, Damion Demeter, Elizabeth Beard
 
 # Resources
 
 * <a href="https://github.com/poldracklab/mriqc">MRIQC</a>
 * <a href="https://mriqc.readthedocs.io/en/stable/">MRIQC documentation</a>
+* <a href="https://neurohackademy.org">Neurohackademy</a>
 * <a href="https://github.com/neurohackademy/2019_projects">Neurohackademy 2019 projects repo</a>

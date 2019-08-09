@@ -15,8 +15,10 @@ Figure JSON:
             "marker": {
                 "color": "rgba(31,119,180,1)",
                 "line": {
-                    "color": "rgba(31,119,180,1)"
-                }
+                    "color": "black",
+                    "width": 1
+                },
+                "size": 12
             },
             "name": "data",
             "pointpos": -1.8,
@@ -42,7 +44,7 @@ Figure JSON:
                 "example 2"
             ],
             "xaxis": "x",
-            "xsrc": "sarenseeley:4:4785ce",
+            "xsrc": "sarenseeley:22:48c199",
             "y": [
                 2.35988108836195,
                 2.44245562762918,
@@ -64,7 +66,7 @@ Figure JSON:
                 2.00834571084259
             ],
             "yaxis": "y",
-            "ysrc": "sarenseeley:4:908ee4"
+            "ysrc": "sarenseeley:22:62ce33"
         }
     ],
     "frames": [],
@@ -96,7 +98,7 @@ Figure JSON:
                 0,
                 1
             ],
-            "title": "fd_mean"
+            "title": []
         }
     }
 }
