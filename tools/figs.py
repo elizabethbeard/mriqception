@@ -213,11 +213,13 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
                     line_color='rgb(58,54,54)')
          )
     # update characteristics shared by all traces
+    definition = descriptors.loc[(descriptors['iqm_name']==var_name),"iqm_definition"].tolist()[0]
     fig.update_traces(meanline_visible=True,
               box_visible=True)
     fig.update_layout(autosize=False,
-                     width=600,
-                     height=600)
+                     width=700,
+                     height=700,
+                     xaxis=go.layout.XAxis(title = go.layout.xaxis.Title(text=definition,font=dict(size=12))))
     fig.update_layout(template="plotly_white") # make background white
 
     # create a figure widget in order to show the dropdown menu
@@ -235,15 +237,16 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
 
         API_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'values']
         API_data = remove_outliers_from_api(API_data,outliers)
+        user_data = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values']
 
         with fig_widget.batch_update():
             fig_widget.data[0].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'var']
-            fig_widget.data[0].y = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='USER'),'values']
+            fig_widget.data[0].y = user_data
             fig_widget.data[0].line = {'color': plot_dict.get(var_name, 'red')}
             fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
             fig_widget.data[1].y = API_data
             definition = descriptors.loc[(descriptors['iqm_name']==var_name),"iqm_definition"].tolist()[0]
-            fig_widget.layout.annotations = [{'text': definition}]
+            fig_widget.layout.xaxis.title = {'text': definition}
 
     dropdown_widget.observe(response, names="value")
 
