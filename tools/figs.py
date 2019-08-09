@@ -192,7 +192,14 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
 
     API_data = remove_outliers_from_api(API_data,outliers)
 
-
+    def make_range(data, variable):
+        mini_data = data.loc[(data['var']==variable)]
+        max_point = mini_data.max().values[3]
+        min_point = mini_data.min().values[3]
+        spread = max_point-min_point
+        point_range = [(min_point-(.2*spread)), (max_point+(.2*spread))]
+        return point_range
+                    
     # create a split violin plot for a single variable
     fig = go.Figure()
 
@@ -219,7 +226,9 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
     fig.update_layout(autosize=False,
                      width=700,
                      height=700,
+                     margin=go.layout.Margin(t=0),
                      xaxis=go.layout.XAxis(title = go.layout.xaxis.Title(text=definition,font=dict(size=12))))
+    fig.update_yaxes(range=make_range(df_long, var_name))
     fig.update_layout(template="plotly_white") # make background white
 
     # create a figure widget in order to show the dropdown menu
@@ -246,7 +255,8 @@ def make_vio_plot(data, IQM_to_plot, data_descriptors, outliers=False):
             fig_widget.data[1].x = df_long.loc[(df_long['var']==var_name)&(df_long['SOURCE']=='API'),'var']
             fig_widget.data[1].y = API_data
             definition = descriptors.loc[(descriptors['iqm_name']==var_name),"iqm_definition"].tolist()[0]
-            fig_widget.layout.xaxis.title = {'text': definition}
+            fig_widget.layout.xaxis.title = {'text': definition, 'font': {'size':12}}
+            fig_widget.layout.yaxis.range = make_range(df_long, var_name)
 
     dropdown_widget.observe(response, names="value")
 
