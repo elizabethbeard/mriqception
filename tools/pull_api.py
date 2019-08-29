@@ -316,15 +316,13 @@ def format_operator(op):
         '$eq': ['=', '==', ':', 'eq'],
         '$ne': ['<>', '!=', 'ne']
     }
-
-    op_dict_invert = {key: op_dict_invert[key].append(key) for key in op_dict_invert.keys()}
+    for key in op_dict_invert.keys():
+        op_dict_invert[key].append(key)
 
     # associate all the operators to mongodb operators
     op_dict = dict((v, k) for k in op_dict_invert for v in op_dict_invert[k])
     for k in op_dict_invert.keys():
         op_dict[k] = k
-
-
 
 
 def add_operator(operator_str, string):
