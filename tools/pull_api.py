@@ -260,23 +260,6 @@ url = mriqc_url('bold', filter, 3, 30)
 
 r = request_page(url)
 
-op_list = ['>', '>=', '<', '<=', '=', '==', ':', '<>', '!=']
-op_list_letters = ['gt', 'ge', 'le', 'lt', 'eq', 'ne']
-op_list_letters_dollar = ['$' + s for s in op_list_letters]
-
-op_dict_invert = {
-    '$gt': ['>', 'gt'],
-    '$gte': ['>=', 'ge', '$ge'],
-    '$lt': ['<', 'lt'],
-    '$lte': ['<=', 'le', '$le'],
-    '$eq': ['=', '==', ':', 'eq'],
-    '$ne': ['<>', '!=', 'ne']
-}
-
-op_dict = dict((v, k) for k in op_dict_invert for v in op_dict_invert[k])
-for k in op_dict_invert.keys():
-    op_dict[k] = k
-
 keys = ['_updated', '_created']
 
 gt_str = '{"_updated":{"$gt":"Sun, 04 Jun 2017 04:19:33 GMT"}, "_updated":{"$lt":"Sun, 11 Jun 2017 04:19:33 GMT"}, "bids_meta.RepetitionTime":2}'
@@ -299,3 +282,64 @@ def find_date(arg):
         print("todo")
     else:
         raise TypeError("arg can be either a string or a list")
+
+
+def add_date(s):
+    date_obj = dateparser.parse(s)
+    good_format = date_obj.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+    return good_format
+
+
+def format_operator(op):
+    """
+    Translate operators into mongodb syntax operatorz
+    Parameters
+    ----------
+    op : str
+        an operator in python/bash/mongodb format
+
+    Returns
+    -------
+    op_out : str
+        operator in mongodb syntax
+    """
+    op_list = ['>', '>=', '<', '<=', '=', '==', ':', '<>', '!=']
+    op_list_letters = ['gt', 'ge', 'le', 'lt', 'eq', 'ne']
+    op_list_letters_dollar = ['$' + s for s in op_list_letters]
+
+    op_dict_invert = {
+        '$gt': ['>', 'gt'],
+        '$gte': ['>=', 'ge', '$ge'],
+        '$lt': ['<', 'lt'],
+        '$lte': ['<=', 'le', '$le'],
+        '$eq': ['=', '==', ':', 'eq'],
+        '$ne': ['<>', '!=', 'ne']
+    }
+
+    op_dict_invert = {key: op_dict_invert[key].append(key) for key in op_dict_invert.keys()}
+
+    # associate all the operators to mongodb operators
+    op_dict = dict((v, k) for k in op_dict_invert for v in op_dict_invert[k])
+    for k in op_dict_invert.keys():
+        op_dict[k] = k
+
+
+
+
+def add_operator(operator_str, string):
+    """
+
+    Parameters
+    ----------
+    operator_str : str
+        an operator to be added to the string
+    string : str
+        a string shaped like "key":"val"
+    Returns
+    -------
+    element : str
+        "key":{"operator":"val"}
+    """
+
+    return element
