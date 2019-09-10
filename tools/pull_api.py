@@ -3,6 +3,7 @@ import requests
 import re
 
 import pandas as pd
+import dateparser
 
 from urllib.request import urlopen
 from pandas.io.json import json_normalize
@@ -247,7 +248,6 @@ def tata(data):
 # date_obj = datetime.strptime(date_input, '%m/%d/%Y')
 # from datetime import datetime
 # import dateutil
-import dateparser
 
 date_input = '07/15/2017 10:55:50'
 
@@ -286,9 +286,9 @@ def find_date(arg):
 
 def add_date(s):
     date_obj = dateparser.parse(s)
-    good_format = date_obj.strftime('%a, %d %b %Y %H:%M:%S GMT')
+    mongodb_format = date_obj.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-    return good_format
+    return mongodb_format
 
 
 def format_operator(op):
@@ -304,9 +304,9 @@ def format_operator(op):
     op_out : str
         operator in mongodb syntax
     """
-    op_list = ['>', '>=', '<', '<=', '=', '==', ':', '<>', '!=']
+    # op_list = ['>', '>=', '<', '<=', '=', '==', ':', '<>', '!=']
+    # op_list_letters_dollar = ['$' + s for s in op_list_letters]
     op_list_letters = ['gt', 'ge', 'le', 'lt', 'eq', 'ne']
-    op_list_letters_dollar = ['$' + s for s in op_list_letters]
 
     op_dict_invert = {
         '$gt': ['>', 'gt'],
@@ -324,6 +324,8 @@ def format_operator(op):
     for k in op_dict_invert.keys():
         op_dict[k] = k
 
+    return op_dict[op]
+
 
 def add_operator(operator_str, string):
     """
@@ -333,11 +335,33 @@ def add_operator(operator_str, string):
     operator_str : str
         an operator to be added to the string
     string : str
-        a string shaped like "key":"val"
+        a string shaped like "key:val"
     Returns
     -------
     element : str
         "key":{"operator":"val"}
     """
-
+    tmp = string.split(':')
+    key = tmp[0]
+    val = tmp[1]
+    element = '%s:{%s:%s}' % (key, format_operator(operator_str), val)
     return element
+
+
+def add_filter(req_filter, request=''):
+    """
+
+    Parameters
+    ----------
+    req_filter : str
+        string shaped like "key":"val" or "key":{"op":"val"}
+    request
+
+    Returns
+    -------
+
+    """
+    if request == "":
+        return "{%s}" % req_filter
+    else:
+        return request[:-1] + ',' + req_filter + '}'
