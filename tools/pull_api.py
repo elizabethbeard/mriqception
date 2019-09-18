@@ -274,6 +274,26 @@ print(str([item['_updated'] for item in r.json()['_items']]))
 print(str([item['bids_meta']['RepetitionTime'] for item in r.json()['_items']]))
 
 
+def aq(string):
+    """
+    Add the quotes " characters around a string if they are not already there.
+    Parameters
+    ----------
+    string : str
+        just a string to be formatted
+    Returns
+    -------
+        str
+        a string with " character at the beginning and the end
+    """
+    tmp = string
+    if not string.startswith('"'):
+        tmp = '"' + tmp
+    if not string.endswith('"'):
+        tmp = tmp + '"'
+    return tmp
+
+
 def find_date(arg):
     if isinstance(arg, str):
         re.findall(r'\"_updated\":((\d|-)+)*', gt_str)
@@ -285,15 +305,27 @@ def find_date(arg):
 
 
 def add_date(s):
+    """
+
+    Parameters
+    ----------
+    s : str
+        a date string it can be in any format handled by the datetime package
+
+    Returns
+    -------
+        str
+        date string in mongodb format
+    """
     date_obj = dateparser.parse(s)
     mongodb_format = date_obj.strftime('%a, %d %b %Y %H:%M:%S GMT')
 
-    return mongodb_format
+    return aq(mongodb_format)
 
 
 def format_operator(op):
     """
-    Translate operators into mongodb syntax operatorz
+    Translate operators into mongodb syntax operators
     Parameters
     ----------
     op : str
@@ -324,7 +356,7 @@ def format_operator(op):
     for k in op_dict_invert.keys():
         op_dict[k] = k
 
-    return op_dict[op]
+    return aq(op_dict[op])
 
 
 def add_operator(operator_str, string):
@@ -344,7 +376,7 @@ def add_operator(operator_str, string):
     tmp = string.split(':')
     key = tmp[0]
     val = tmp[1]
-    element = '%s:{%s:%s}' % (key, format_operator(operator_str), val)
+    element = '%s:{%s:%s}' % (aq(key), format_operator(operator_str), aq(val))
     return element
 
 
@@ -355,11 +387,13 @@ def add_filter(req_filter, request=''):
     ----------
     req_filter : str
         string shaped like "key":"val" or "key":{"op":"val"}
-    request
+    request : str (optional)
+        request string shaped like: {"key1":{"op1":"val1"}[,"key2":{"op2":"val2"}]*}
 
     Returns
     -------
-
+        str
+        a string shaped like {["key_i":{"op_i":"val_i"},]*, "key", "val"}
     """
     if request == "":
         return "{%s}" % req_filter
