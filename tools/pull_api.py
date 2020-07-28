@@ -3,6 +3,7 @@ import requests
 import re
 
 import pandas as pd
+import dateparser
 
 from urllib.request import urlopen
 from pandas.io.json import json_normalize
@@ -153,7 +154,6 @@ def store_page(data, out_csv=None, append=True):
 
 def pull_pages(modality, filters='', page_number=-1, max_page_results=1000,
                   out_csv=None, append=True):
-
     page_url = mriqc_url(modality, filters, page_number, max_page_results)
     request_res = request_page(page_url)
     data = request_res.json()
@@ -164,7 +164,9 @@ def pull_pages(modality, filters='', page_number=-1, max_page_results=1000,
         # continue
         print('todo')
     try:
-        last_page = re.findall("page=(\d*)&", data['_links']['last']['href'])[0]
+        last_page = re.findall(
+            r"page=(\d*)&", data['_links']['last']['href']
+        )[0]
     except KeyError:
         print("Page {} is the last page".format(page))
     '''
@@ -246,7 +248,6 @@ def tata(data):
 # date_obj = datetime.strptime(date_input, '%m/%d/%Y')
 # from datetime import datetime
 # import dateutil
-import dateparser
 
 date_input = '07/15/2017 10:55:50'
 
@@ -259,10 +260,142 @@ url = mriqc_url('bold', filter, 3, 30)
 
 r = request_page(url)
 
+keys = ['_updated', '_created']
+
+gt_str = '{"_updated":{"$gt":"Sun, 04 Jun 2017 04:19:33 GMT"}, "_updated":{"$lt":"Sun, 11 Jun 2017 04:19:33 GMT"}, "bids_meta.RepetitionTime":2}'
+gt_list = ["_updated>06/04/2017 04:19:33"]
+
+url = mriqc_url('bold', gt_str, max_page_results=30)
+r = request_page(url)
+r.status_code
+
+len(r.json()['_items'])
+print(str([item['_updated'] for item in r.json()['_items']]))
+print(str([item['bids_meta']['RepetitionTime'] for item in r.json()['_items']]))
+
+
+def aq(string):
+    """
+    Add the quotes " characters around a string if they are not already there.
+    Parameters
+    ----------
+    string : str
+        just a string to be formatted
+    Returns
+    -------
+        str
+        a string with " character at the beginning and the end
+    """
+    tmp = string
+    if not string.startswith('"'):
+        tmp = '"' + tmp
+    if not string.endswith('"'):
+        tmp = tmp + '"'
+    return tmp
+
+
 def find_date(arg):
     if isinstance(arg, str):
-        re.findall('((_updated|_created):(\d{2}-\d{2}-\d{4}))', arg)
+        re.findall(r'\"_updated\":((\d|-)+)*', gt_str)
+        re.search(r'\"_updated\":((\d|-)+)*', gt_str)
     elif isinstance(arg, list):
         print("todo")
     else:
         raise TypeError("arg can be either a string or a list")
+
+
+def add_date(s):
+    """
+
+    Parameters
+    ----------
+    s : str
+        a date string it can be in any format handled by the datetime package
+
+    Returns
+    -------
+        str
+        date string in mongodb format
+    """
+    date_obj = dateparser.parse(s)
+    mongodb_format = date_obj.strftime('%a, %d %b %Y %H:%M:%S GMT')
+
+    return aq(mongodb_format)
+
+
+def format_operator(op):
+    """
+    Translate operators into mongodb syntax operators
+    Parameters
+    ----------
+    op : str
+        an operator in python/bash/mongodb format
+
+    Returns
+    -------
+    op_out : str
+        operator in mongodb syntax
+    """
+    # op_list = ['>', '>=', '<', '<=', '=', '==', ':', '<>', '!=']
+    # op_list_letters_dollar = ['$' + s for s in op_list_letters]
+    op_list_letters = ['gt', 'ge', 'le', 'lt', 'eq', 'ne']
+
+    op_dict_invert = {
+        '$gt': ['>', 'gt'],
+        '$gte': ['>=', 'ge', '$ge'],
+        '$lt': ['<', 'lt'],
+        '$lte': ['<=', 'le', '$le'],
+        '$eq': ['=', '==', ':', 'eq'],
+        '$ne': ['<>', '!=', 'ne']
+    }
+    for key in op_dict_invert.keys():
+        op_dict_invert[key].append(key)
+
+    # associate all the operators to mongodb operators
+    op_dict = dict((v, k) for k in op_dict_invert for v in op_dict_invert[k])
+    for k in op_dict_invert.keys():
+        op_dict[k] = k
+
+    return aq(op_dict[op])
+
+
+def add_operator(operator_str, string):
+    """
+
+    Parameters
+    ----------
+    operator_str : str
+        an operator to be added to the string
+    string : str
+        a string shaped like "key:val"
+    Returns
+    -------
+    element : str
+        "key":{"operator":"val"}
+    """
+    tmp = string.split(':')
+    key = tmp[0]
+    val = tmp[1]
+    element = '%s:{%s:%s}' % (aq(key), format_operator(operator_str), aq(val))
+    return element
+
+
+def add_filter(req_filter, request=''):
+    """
+
+    Parameters
+    ----------
+    req_filter : str
+        string shaped like "key":"val" or "key":{"op":"val"}
+    request : str (optional)
+        request string shaped like: {"key1":{"op1":"val1"}[,"key2":{"op2":"val2"}]*}
+
+    Returns
+    -------
+        str
+        a string shaped like {["key_i":{"op_i":"val_i"},]*, "key", "val"}
+    """
+    if request == "":
+        return "{%s}" % req_filter
+    else:
+        return request[:-1] + ',' + req_filter + '}'
