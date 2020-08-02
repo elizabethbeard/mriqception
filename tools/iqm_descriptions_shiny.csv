@@ -1,0 +1,131 @@
+iqm_name,iqm_definition,image_type,measure_type,color
+aor,"AFNI'S outlier ratio. Mean fraction of outliers per fMRI volume, from AFNI's 3dToutcount.
+Higher values indicate lower quality.",func,other,#9932CC
+aqi,"AFNI's quality index. Mean quality index, from AFNI's 3dTqual.
+Values close to 0 indicate higher quality.",func,other,#9932CC
+cjv,"Coefficient of joint variation between white matter and gray matter.
+Higher values indicate more head motion and/or intensity non-uniformity artifacts.",anat,noise,#A52A2A
+cnr,"Contrast-to-noise ratio, reflecting separation between GM & WM.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+dummy_trs,Number of volumes in the beginning of the fMRI timeseries identified as non-steady state.,func,other,#9932CC
+dvars_nstd,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
+Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal,#D2691E
+dvars_std,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
+Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal,#D2691E
+dvars_vstd,"DVARS is the average change in mean intensity between each pair of fMRI volumes in a series.
+Higher values indicate more dramatic changes (e.g., due to motion or spiking).",func,temporal,#D2691E
+efc,"Shannon entropy-focus criterion.
+Higher values indicate more ghosting and/or head motion blurring. ",func,spatial,#DAA520
+fber,"Foreground-background energy ratio: the variance of voxels inside the brain divided by the variance of voxels outside the brain.
+Higher values indicate higher quality.",func,spatial,#DAA520
+fd_mean,"Mean framewise displacement: measure of subject head motion, which compares the motion between the current and previous volumes.
+Higher values indicate lower quality.",func,motion,#66CDAA
+fd_num,"Number of timepoints with framewise displacement >0.2mm.
+Higher values indicate lower quality.",func,motion,#66CDAA
+fd_perc,"Percent of timepoints with framewise displacement >0.2mm.
+Higher values indicate lower quality.",func,motion,#66CDAA
+fwhm_avg,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",func,spatial,#DAA520
+fwhm_x,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial,#DAA520
+fwhm_y,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial,#DAA520
+fwhm_z,"Image blurriness (full-width half-maximum).
+Higher values indicate a blurrier image.",anat,spatial,#DAA520
+gcor,"Global correlation: Average correlation of all pairs of voxel time series inside of the brain. Illustrates differences between data due to motion/physiological noise/imaging artifacts.
+<br>Values closer to zero are better.",func,temporal,#D2691E
+gsr_x,"Ghost-to-signal ratio along the x or y encoding axes.
+Higher values indicate lower quality.",func,other,#9932CC
+gsr_y,"Ghost-to-signal ratio along the x or y encoding axes.
+Higher values indicate lower quality.",func,other,#9932CC
+icvs_csf,"
+Intracranial volume fraction in CSF.<br>
+Values should move within a normative range.",anat,descriptive,#00008B
+icvs_gm,"
+Intracranial volume fraction in grey matter.<br>
+Values should move within a normative range.",anat,descriptive,#00008B
+icvs_wm,"
+Intracranial volume fraction in white matter.<br>
+Values should move within a normative range.",anat,descriptive,#00008B
+inu_med,"Intensity non-uniformity (bias field) median.
+Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact,#6495ED
+inu_range,"Intensity non-uniformity (bias field) range.
+Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact,#6495ED
+qi_1,"Mortamet's quality index 1. The proportion of voxels outside the brain with artifacts to the total number of voxels outside the brain.
+Higher values indicate lower quality.",anat,other,#9932CC
+qi_2,"Mortamet's quality index 2. A quality index accounting for effects of both clustered and subtle artifacts in the air background.
+Higher values indicate lower quality.",anat,noise,#A52A2A
+rpve_csf,"Residual partial volume error in CSF.
+Higher values indicate lower quality.",anat,other,#9932CC
+rpve_gm,"Residual partial volume error in grey matter.
+Higher values indicate lower quality.",anat,other,#9932CC
+rpve_wm,"Residual partial volume error in white matter.
+Higher values indicate lower quality.",anat,other,#9932CC
+snr,"Signal-to-noise ratio within the tissue mask.
+Higher values indicate higher quality.",func,noise,#A52A2A
+snr_csf,"Signal-to-noise ratio within the CSF mask.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snr_gm,"Signal-to-noise ratio within the grey matter mask.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snr_total,"Signal-to-noise ratio within the total mask.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snr_wm,"Signal-to-noise ratio within the white matter mask.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snrd_csf,"Dietrich et al. (2007)'s signal-to-noise ratio in CSF.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snrd_gm,"Dietrich et al. (2007)'s signal-to-noise ratio in grey matter.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snrd_total,"Dietrich et al. (2007)'s signal-to-noise ratio (total).
+Higher values indicate higher quality.",anat,noise,#A52A2A
+snrd_wm,"Dietrich et al. (2007)'s signal-to-noise ratio in white matter.
+Higher values indicate higher quality.",anat,noise,#A52A2A
+summary_bg_k,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_mad,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_mean,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_median,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_n,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_p05,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_p95,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_bg_stdv,Summary statistics for average intensities in the image background.,anat,descriptive,#00008B
+summary_csf_k,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_mad,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_mean,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_median,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_n,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_p05,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_p95,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_csf_stdv,Summary statistics for average intensities in CSF.,anat,descriptive,#00008B
+summary_fg_k,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_mad,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_mean,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_median,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_n,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_p05,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_p95,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_fg_stdv,Summary statistics for the image foreground.,func,descriptive,#00008B
+summary_gm_k,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_mad,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_mean,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_median,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_n,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_p05,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_p95,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_gm_stdv,Summary statistics for average intensities in GM.,anat,descriptive,#00008B
+summary_wm_k,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_mad,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_mean,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_median,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_n,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_p05,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_p95,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+summary_wm_stdv,Summary statistics for average intensities in WM.,anat,descriptive,#00008B
+tpm_overlap_csf,"TPM overlap: How well the CSF tissue probability maps overlap with those from the MNI ICBM 2009 template.
+Higher values indicate better spatial normalization.",anat,other,#9932CC
+tpm_overlap_gm,"TPM overlap: How well the grey matter tissue probability maps overlap with those from the MNI ICBM 2009 template.
+Higher values indicate better spatial normalization.",anat,other,#9932CC
+tpm_overlap_wm,"TPM overlap: How well the white matter tissue probability maps overlap with those from the MNI ICBM 2009 template.
+Higher values indicate better spatial normalization.",anat,other,#9932CC
+tsnr,"Temporal signal-to-noise ratio taking into account mean signal over time.
+Higher values indicate higher quality.",func,temporal,#D2691E
+wm2max,"White matter-to-maximum intensity ratio: captures skewed distributions within the WM mask, caused by fat and vascular-related hyperintensities.
+Ideal values fall within the interval [0.6, 0.8].",anat,artifact,#6495ED

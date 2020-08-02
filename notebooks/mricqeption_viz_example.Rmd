@@ -21,8 +21,8 @@ library(reshape)
 
 # read in test data from git
 # change this file path depending on where you have your local git repository 
-test_data <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/group_T1w.tsv',header=TRUE)
-test_data2 <- read.table('~/Documents/Neurohackademy_2019/mriqception/test_data/group2_T1w.tsv',header=TRUE)
+test_data <- read.table('~/Documents/Code/mriqception/test_data/group_T1w.tsv',header=TRUE)
+test_data2 <- read.table('~/Documents/Code/mriqception/test_data/group2_T1w.tsv',header=TRUE)
 
 ```
 
@@ -126,7 +126,7 @@ p <- df %>%
       color = 'orange'
     ),
     points = 'all',
-    pointpos = -0.9,
+    pointpos = -0.5,
     jitter = 0.1,
     scalemode = 'count',
     meanline = list(
@@ -157,8 +157,9 @@ p <- df %>%
       visible = T
     ),
     line = list(
-      color = 'green'
-    )
+      color = 'rgb(58,54,54)'
+    ), 
+    color = I('dark gray')
   ) %>% 
   layout(
     xaxis = list(
