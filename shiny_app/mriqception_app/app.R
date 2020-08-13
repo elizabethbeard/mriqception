@@ -10,112 +10,9 @@
 library(shiny)
 library(reshape2)
 library(plotly)
+library(jsonlite)
 
-IQM_descriptions <- read.csv("../../tools/iqm_descriptions_shiny.csv")
-plotted=FALSE
-bold_choices <- list("SNR" = "snr", 
-                     "TSNR" = "tsnr", 
-                     "DVAR" = 'dvars_nstd', 
-                     "FD" = 'fd_mean',
-                     "FWHM"='fwhm_avg',
-                     "Tesla"='bids_meta_MagneticFieldStrength',
-                     "gsr_x" = 'gsr_x',
-                     "gsr_y" = 'gsr_y',
-                     "TE" = 'bids_meta_EchoTime',
-                     "TR" = 'bids_meta_RepetitionTime')
-
-T1w_choices <- list("SNR_TOTAL" = "snr_total", 
-                    "SNR_GM" = "snr_gm", 
-                    "SNR_WM" = "snr_wm", 
-                    "SNR_CSF" = "snr_csf",
-                    "CNR" = "cnr", 
-                    "EFC" = "efc", 
-                    "FWHM" = "fwhm_avg", 
-                    "TE" = "bids_meta_EchoTime", 
-                    "TR" = "bids_meta_RepetitionTime", 
-                    "Tesla" = "bids_meta_MagneticFieldStrength")
-
-T2w_choices = list("SNR_TOTAL" = "snr_total", 
-                   "SNR_GM" = "snr_gm", 
-                   "SNR_WM" = "snr_wm", 
-                   "SNR_CSF" = "snr_csf",
-                   "CNR" = "cnr", 
-                   "EFC" = "efc")
-
-measure_slider_inputs <- list(
-    snr = list(
-        min = 3, 
-        max = 6
-    ),
-    tsnr = list(
-        min = 0, 
-        max = 100
-    ),
-    dvar = list(
-        min = 10, 
-        max = 80
-    ),
-    fd = list(
-        min = -2, 
-        max = 2
-    ),
-    fwhm = list(
-        min = 2, 
-        max = 3.5
-    ),
-    gsr_x = list(
-        min = -0.03, 
-        max = 0.015
-    ),
-    gsr_y = list(
-        min = -0.02, 
-        max = 0.08
-    ),
-    TR= list(
-        min = 0, 
-        max = 5
-    ),
-    TE = list(
-        min = 0, 
-        max = 0.05
-    ),
-    snr_total = list(
-        min = 8, 
-        max = 18
-    ),
-    snr_gm = list(
-        min = 7, 
-        max = 16
-    ),
-    snr_wm= list(
-        min = 10, 
-        max = 35
-    ),
-    snr_csf = list(
-        min = 10, 
-        max = 40
-    ),
-    cnr = list(
-        min = 1, 
-        max = 4.5
-    ),
-    efc = list(
-        min = 0, 
-        max = 1
-    )
-)
-
-for (idx in seq.int(1,length(measure_slider_inputs))){
-    measure_slider_inputs[[idx]]$value <- c(measure_slider_inputs[[idx]]$min, measure_slider_inputs[[idx]]$max)
-    
-}
-
-slider_input_fxn <- function(id){
-    label_text <- paste0("Please select a range for ",toupper(id),":", sep = "")
-    sliderInput(id, label = h5(label_text), min = measure_slider_inputs[[id]][["min"]], 
-                max = measure_slider_inputs[[id]][["max"]], 
-                value =measure_slider_inputs[[id]][["value"]])
-}
+source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -218,10 +115,7 @@ ui <- fluidPage(
         mainPanel(
             textOutput("waiting_message"),
             textOutput("color_descriptions"),
-            conditionalPanel(
-                condition = "input.get_data",
-                uiOutput("select_IQM_render")
-            ),
+            uiOutput("select_IQM_render"),
             conditionalPanel(
                 condition = "input.get_data",
                 plotlyOutput("plot")
@@ -234,65 +128,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-    values <- reactiveValues()
-    
-    get_color <- reactive(
-        color <- IQM_descriptions$color[which(IQM_descriptions$iqm_name == input$select_IQM)]
-    )
-    
-    output$choose_filters <- renderUI({
-        if (input$modality == "bold"){
-            choices_list <- bold_choices
-        }else if (input$modality == "T1w"){
-            choices_list <- T1w_choices
-        }else if (input$modality == "T2w"){
-            choices_list <- T2w_choices
-        }
-        checkboxGroupInput("filters", 
-                           h5("Please choose the filters you want to use for the API data:"), 
-                           choices = choices_list
-        )
-    })
-    
-    output$select_IQM_render <- renderUI({
-        if (input$modality == "bold"){
-            choices_list <- bold_choices
-        }else if (input$modality == "T1w"){
-            choices_list <- T1w_choices
-        }else if (input$modality == "T2w"){
-            choices_list <- T2w_choices
-        }
-        selectInput("select_IQM", h6("Please select IQM"), 
-                    choices = unique(full_data$variable)
-        )
-    })
-    
-    get_API_data <- eventReactive(input$get_data,{
-        # load in API data
-        req(input$local_file)
-        output$waiting_message <- renderText({"Please be patient, loading lots of data"})
-        
-        API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
-        API_data <- melt(API_data)
-        API_data$group <- "all_data"
-        API_data$variable <- as.character(API_data$variable)
-        # ext <- tools::file_ext(input$local_file$name)
-        # switch(ext,
-        #        tsv = vroom::vroom(input$file$datapath, delim = "\t"),
-        #        validate("Invalid file; Please upload a .tsv file")
-        # )
-        inFile <- input$local_file
-        local_data <- read.table(inFile$datapath, header=TRUE)
-        local_data <- melt(local_data)
-        local_data$group <- "local_set"
-        full_data <- rbind(local_data,API_data)
-        full_data$value <- as.numeric(full_data$value)
-        output$waiting_message <- renderText({""})
-        return(full_data)
-        
-        
-        # in here, can do filtering  -- have access to input$filters
-    })
+    values <- reactiveValues(plotted=FALSE)
     
     do_plot <- function(df){ 
         plotted=TRUE
@@ -363,15 +199,63 @@ server <- function(input, output) {
         
     }
     
+    get_color <- reactive(
+        color <- IQM_descriptions$color[which(IQM_descriptions$iqm_name == input$select_IQM)]
+    )
     
-    remove_outliers_fxn <- function(data){
-        filtered <- data %>% filter(group == "all_data")
-        qnt <- quantile(filtered$value, probs=c(.25, .75), na.rm=TRUE)
-        H <- 1.5 * IQR(filtered$value,na.rm=TRUE)
-        data$value[(data$value < (qnt[1] - H)) & (data$group == "all_data")] <- NA
-        data$value[(data$value > (qnt[2] + H)) & (data$group == "all_data")] <- NA
-        return(data)
-    }
+    output$choose_filters <- renderUI({
+        if (input$modality == "bold"){
+            choices_list <- bold_choices
+        }else if (input$modality == "T1w"){
+            choices_list <- T1w_choices
+        }else if (input$modality == "T2w"){
+            choices_list <- T2w_choices
+        }
+        checkboxGroupInput("filters", 
+                           h5("Please choose the filters you want to use for the API data:"), 
+                           choices = choices_list
+        )
+    })
+    
+    output$select_IQM_render <- renderUI({
+        if (input$modality == "bold"){
+            choices_list <- bold_choices
+        }else if (input$modality == "T1w"){
+            choices_list <- T1w_choices
+        }else if (input$modality == "T2w"){
+            choices_list <- T2w_choices
+        }
+        selectInput("select_IQM", h6("Please select IQM"), 
+                    choices=unique(values$df$variable)
+        )
+    })
+    
+    get_API_data <- eventReactive(input$get_data,{
+        # load in API data
+        req(input$local_file)
+        output$waiting_message <- renderText({"Please be patient, loading lots of data"})
+        
+        API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
+        API_data <- melt(API_data)
+        API_data$group <- "all_data"
+        API_data$variable <- as.character(API_data$variable)
+        # ext <- tools::file_ext(input$local_file$name)
+        # switch(ext,
+        #        tsv = vroom::vroom(input$file$datapath, delim = "\t"),
+        #        validate("Invalid file; Please upload a .tsv file")
+        # )
+        inFile <- input$local_file
+        local_data <- read.table(inFile$datapath, header=TRUE)
+        local_data <- melt(local_data)
+        local_data$group <- "local_set"
+        full_data <- rbind(local_data,API_data)
+        full_data$value <- as.numeric(full_data$value)
+        output$waiting_message <- renderText({""})
+        return(full_data)
+        
+        
+        # in here, can do filtering  -- have access to input$filters
+    })
     
     remove_outliers_reactive <- reactive({
         if (input$remove_outliers){
@@ -383,10 +267,16 @@ server <- function(input, output) {
     
     output$plot <-renderPlotly({
         values$df <- get_API_data()
-        values$filtered_data <- values$df %>% filter(variable == input$select_IQM)
+        #browser()
+        if (input$select_IQM == ""){ 
+            values$filtered_data <- values$df
+        }else{
+            values$filtered_data <- values$df %>% filter(variable == input$select_IQM)
+        }
+        #browser()
         remove_outliers_reactive()
         do_plot(values$plot_data)
-        #plotted=TRUE
+        #values$plotted=TRUE
         
     })
     
