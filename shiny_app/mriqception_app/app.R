@@ -34,77 +34,78 @@ ui <- fluidPage(
             checkboxInput("remove_outliers", "Remove outliers from API", value=FALSE),
             uiOutput("choose_filters"),
             # just BOLD filters
+            # conditionalPanel(
+            #     condition = "input.filters.includes('snr')",
+            #     slider_input_fxn("snr")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('tsnr')",
+            #     slider_input_fxn("tsnr")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('dvars_nstd')",
+            #     slider_input_fxn("dvar")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('fd_mean')",
+            #     slider_input_fxn("fd")
+            # ),
+            # # just T1w filters 
+            # conditionalPanel(
+            #     condition = "input.filters.includes('snr_total')",
+            #     slider_input_fxn("snr_total")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('snr_gm')",
+            #     slider_input_fxn("snr_gm")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('snr_wm')",
+            #     slider_input_fxn("snr_wm")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('snr_csf')",
+            #     slider_input_fxn("snr_csf")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('cnr')",
+            #     slider_input_fxn("cnr")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('efc')",
+            #     slider_input_fxn("efc")
+            # ),
+            # # all 
+            # conditionalPanel(
+            #     condition = "input.filters.includes('fwhm_avg')",
+            #     slider_input_fxn("fwhm")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('gsr_x')",
+            #     slider_input_fxn("gsr_x")
+            # ),
+            # conditionalPanel(
+            #     condition = "input.filters.includes('gsr_y')",
+            #     slider_input_fxn("gsr_y")
+            # ),
             conditionalPanel(
-                condition = "input.filters.includes('snr')",
-                slider_input_fxn("snr")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('tsnr')",
-                slider_input_fxn("tsnr")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('dvars_nstd')",
-                slider_input_fxn("dvar")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('fd_mean')",
-                slider_input_fxn("fd")
-            ),
-            # just T1w filters 
-            conditionalPanel(
-                condition = "input.filters.includes('snr_total')",
-                slider_input_fxn("snr_total")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('snr_gm')",
-                slider_input_fxn("snr_gm")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('snr_wm')",
-                slider_input_fxn("snr_wm")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('snr_csf')",
-                slider_input_fxn("snr_csf")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('cnr')",
-                slider_input_fxn("cnr")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('efc')",
-                slider_input_fxn("efc")
-            ),
-            # all 
-            conditionalPanel(
-                condition = "input.filters.includes('fwhm_avg')",
-                slider_input_fxn("fwhm")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('gsr_x')",
-                slider_input_fxn("gsr_x")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('gsr_y')",
-                slider_input_fxn("gsr_y")
-            ),
-            conditionalPanel(
-                condition = "input.filters.includes('bids_meta_EchoTime')",
+                condition = "input.filters.includes('bids_meta.EchoTime')",
                 slider_input_fxn("TE")
             ),
             conditionalPanel(
-                condition = "input.filters.includes('bids_meta_RepetitionTime')",
+                condition = "input.filters.includes('bids_meta.RepetitionTime')",
                 slider_input_fxn("TR")
             ),
             conditionalPanel(
-                condition = "input.filters.includes('bids_meta_MagneticFieldStrength')",
+                condition = "input.filters.includes('bids_meta.MagneticFieldStrength')",
                 radioButtons("mag_strength", 
                              h5("Please choose a magnet strength"),
                              choices = list(
                                  "1.5T"= "1.5",
                                  "3T"="3",
                                  "7T" = "7"
-                             ))
+                             ),
+                             selected = character(0))
             ),
             
             
@@ -113,7 +114,6 @@ ui <- fluidPage(
         ),
         
         mainPanel(
-            textOutput("waiting_message"),
             textOutput("color_descriptions"),
             uiOutput("select_IQM_render"),
             conditionalPanel(
@@ -233,10 +233,38 @@ server <- function(input, output) {
     get_API_data <- eventReactive(input$get_data,{
         # load in API data
         req(input$local_file)
-        output$waiting_message <- renderText({"Please be patient, loading lots of data"})
+
+        modality <- input$modality
+        url_root <- 'https://mriqc.nimh.nih.gov/api/v1/'
+        filters <- create_filter_text(isolate(input))
+        url <- paste0(url_root,modality,"?max_results=50&page=1",filters,sep="")
+        tmpFile <- tempfile()
+        download.file(url, destfile = tmpFile, method = "curl")
+        temp <- jsonlite::read_json(tmpFile)
         
-        API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
-        API_data <- melt(API_data)
+        last_page_href <- temp[["_links"]][["last"]][["href"]]
+        last_page_id <- strsplit(strsplit(last_page_href,split="page=")[[1]][2],split="&")[[1]][1]
+        expanded_data <- reorganize_bids_data(temp[["_items"]])
+        n <- 10    
+        #n <- as.numeric(last_page_id)
+        
+        withProgress(message = 'Loading data', detail = paste("Loading page 1 of",n), value = 0, {
+            for (page in seq.int(2,n)){
+                if (page %% 10 == 0){
+                    incProgress(10/n, detail = paste("Loading page", page,"of",n))
+                }
+                
+                url <- paste0(url_root,modality,"/?max_results=50&page=",as.character(page),filters,sep="")
+                tmpFile <- tempfile()
+                download.file(url, destfile = tmpFile, method = "curl")
+                temp <- jsonlite::read_json(tmpFile)
+                temp_expanded <- reorganize_bids_data(temp[["_items"]])
+                expanded_data <- merge(expanded_data, temp_expanded, all=TRUE)
+            }
+        })
+        API_data <- melt(expanded_data, id.vars = c("bids_name"))
+        # API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
+        # API_data <- melt(API_data)
         API_data$group <- "all_data"
         API_data$variable <- as.character(API_data$variable)
         # ext <- tools::file_ext(input$local_file$name)
@@ -250,7 +278,7 @@ server <- function(input, output) {
         local_data$group <- "local_set"
         full_data <- rbind(local_data,API_data)
         full_data$value <- as.numeric(full_data$value)
-        output$waiting_message <- renderText({""})
+        print(filters)
         return(full_data)
         
         
@@ -267,16 +295,13 @@ server <- function(input, output) {
     
     output$plot <-renderPlotly({
         values$df <- get_API_data()
-        #browser()
         if (input$select_IQM == ""){ 
             values$filtered_data <- values$df
         }else{
             values$filtered_data <- values$df %>% filter(variable == input$select_IQM)
         }
-        #browser()
         remove_outliers_reactive()
         do_plot(values$plot_data)
-        #values$plotted=TRUE
         
     })
     
