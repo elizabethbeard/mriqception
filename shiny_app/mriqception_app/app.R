@@ -12,7 +12,7 @@ library(reshape2)
 library(plotly)
 
 IQM_descriptions <- read.csv("../../tools/iqm_descriptions_shiny.csv")
-
+plotted=FALSE
 bold_choices <- list("SNR" = "snr", 
                      "TSNR" = "tsnr", 
                      "DVAR" = 'dvars_nstd', 
@@ -125,7 +125,7 @@ ui <- fluidPage(
     
     sidebarLayout(
         sidebarPanel(
-            fileInput("local_file", h5("Please upload a tsv of your local data"), multiple = FALSE, accept = ".tsv"),
+            fileInput("local_file", h5("Please upload a tsv from MRIQC of your local data"), multiple = FALSE, accept = ".tsv"),
             fileInput("json_info", h5("Optionally, upload a .json file of BIDS info for your study to automatically set filter parameters close to those in your own study"), multiple = FALSE, accept = ".json"),
             
             
@@ -204,9 +204,9 @@ ui <- fluidPage(
                 radioButtons("mag_strength", 
                              h5("Please choose a magnet strength"),
                              choices = list(
-                                 "1.5T"= "1.5T",
-                                 "3T"="3T",
-                                 "7T" = "7T"
+                                 "1.5T"= "1.5",
+                                 "3T"="3",
+                                 "7T" = "7"
                              ))
             ),
             
@@ -226,7 +226,7 @@ ui <- fluidPage(
                 condition = "input.get_data",
                 plotlyOutput("plot")
             ),
-            conditionalPanel(condition = "values.plotted == TRUE",
+            conditionalPanel(condition = "plotted == TRUE",
                              textOutput("IQM_description"))
             
         )
@@ -234,9 +234,9 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
-    values <- reactiveValues(full_data = data.frame(name=NULL, variable=NULL,value=NULL,group=NULL), 
-                             plotted = FALSE, 
-                             plot_data = NULL)
+    get_color <- reactive(
+        color <- IQM_descriptions$color[which(IQM_descriptions$iqm_name == input$select_IQM)]
+    )
     
     output$choose_filters <- renderUI({
         if (input$modality == "bold"){
@@ -261,46 +261,41 @@ server <- function(input, output) {
             choices_list <- T2w_choices
         }
         selectInput("select_IQM", h6("Please select IQM"), 
-                    choices = unique(values$full_data$variable)
+                    choices = unique(full_data$variable)
         )
     })
     
-    get_API_data <- observeEvent(input$get_data,{
+    get_API_data <- eventReactive(input$get_data,{
         # load in API data
         req(input$local_file)
         output$waiting_message <- renderText({"Please be patient, loading lots of data"})
         
         API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
         API_data <- melt(API_data)
-        API_data$group <- "API"
+        API_data$group <- "all_data"
         API_data$variable <- as.character(API_data$variable)
-        
-        ext <- tools::file_ext(input$local_file$name)
-        switch(ext,
-               tsv = vroom::vroom(input$file$datapath, delim = "\t"),
-               validate("Invalid file; Please upload a .tsv file")
-        )
+        # ext <- tools::file_ext(input$local_file$name)
+        # switch(ext,
+        #        tsv = vroom::vroom(input$file$datapath, delim = "\t"),
+        #        validate("Invalid file; Please upload a .tsv file")
+        # )
         inFile <- input$local_file
         local_data <- read.table(inFile$datapath, header=TRUE)
         local_data <- melt(local_data)
         local_data$group <- "local_set"
         full_data <- rbind(local_data,API_data)
-        full_data$group <- as.factor(full_data$group)
-        values$full_data <- full_data
-        values$API_data <- API_data
-        values$plotted <- TRUE
+        full_data$value <- as.numeric(full_data$value)
+        #full_data$group <- as.factor(full_data$group)
         output$waiting_message <- renderText({""})
+        return(full_data)
+        
         
         # in here, can do filtering  -- have access to input$filters
     })
     
-    get_color <- reactive(
-        color <- IQM_descriptions$color[which(IQM_descriptions$iqm_name == input$select_IQM)]
-    )
-    
-    do_plot <- function(data, IQM){ 
-        data %>% 
-            filter(variable == IQM) %>%
+    do_plot <- function(df){ 
+        plotted=TRUE
+        df %>% 
             plot_ly(type = 'violin') %>%
             add_trace(
                 x = ~variable[df$group=="local_set"],
@@ -318,7 +313,7 @@ server <- function(input, output) {
                 line = list(
                     color = get_color()
                 ),
-                color = get_color(),
+                color = I(get_color()),
                 points = 'all',
                 pointpos = -0.5,
                 jitter = 0.1,
@@ -338,8 +333,8 @@ server <- function(input, output) {
                 )
             ) %>%
             add_trace(
-                x = ~variable[df$group=="API"],
-                y = ~value[df$group=="API"],
+                x = ~variable[df$group=="all_data"],
+                y = ~value[df$group=="all_data"],
                 legendgroup = 'API',
                 scalegroup = 'API',
                 name = 'API',
@@ -367,30 +362,31 @@ server <- function(input, output) {
         
     }
     
-    create_plot <- reactive(
-        do_plot(values$plot_data, input$select_IQM)
-    )
     
-    remove_outliers_fxn <- function(data, filter_var){
-        filtered <- data %>% filter(variable == filter_var & group == "API")
-        qnt <- quantile(filtered$value, probs=c(.25, .75), na.rm=TRUE)
-        H <- 1.5 * IQR(filtered$value,na.rm=TRUE)
-        data$value[data$value < (qnt[1] - H)] <- NA
-        data$value[data$value > (qnt[2] + H)] <- NA
-        return(data)
-    }
-    
-    remove_outliers_reactive <- reactive(
-        if (input$remove_outliers){
-            values$plot_data <- remove_outliers_fxn(values$full_data, input$select_IQM)
-        }else{
-            values$plot_data <- values$full_data
-        }
-    )
+    # remove_outliers_fxn <- function(data){
+    #     filtered <- data %>% filter(group == "all_data")
+    #     qnt <- quantile(filtered$value, probs=c(.25, .75), na.rm=TRUE)
+    #     H <- 1.5 * IQR(filtered$value,na.rm=TRUE)
+    #     data$value[data$value < (qnt[1] - H)] <- NA
+    #     data$value[data$value > (qnt[2] + H)] <- NA
+    #     return(data)
+    # }
+    # 
+    # remove_outliers_reactive <- reactive(
+    #     if (input$remove_outliers){
+    #         plot_data <- remove_outliers_fxn(full_data)
+    #     }else{
+    #         plot_data <- full_data
+    #     }
+    #     #return(plot_data)
+    #)
     
     output$plot <-renderPlotly({
-        remove_outliers_reactive()
-        create_plot()
+        df <- get_API_data()
+        df <- df %>% filter(variable == input$select_IQM)
+        #df <- remove_outliers_reactive()
+        do_plot(df)
+        #plotted=TRUE
         
     })
     

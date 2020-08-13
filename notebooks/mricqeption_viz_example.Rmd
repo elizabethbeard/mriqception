@@ -11,7 +11,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r import things}
 
 library(ggplot2)
-#install.packages('plotly')
 library(plotly)
 library(reshape)
 ```
