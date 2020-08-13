@@ -234,6 +234,8 @@ ui <- fluidPage(
 )
 
 server <- function(input, output) {
+    values <- reactiveValues()
+    
     get_color <- reactive(
         color <- IQM_descriptions$color[which(IQM_descriptions$iqm_name == input$select_IQM)]
     )
@@ -285,7 +287,6 @@ server <- function(input, output) {
         local_data$group <- "local_set"
         full_data <- rbind(local_data,API_data)
         full_data$value <- as.numeric(full_data$value)
-        #full_data$group <- as.factor(full_data$group)
         output$waiting_message <- renderText({""})
         return(full_data)
         
@@ -363,29 +364,28 @@ server <- function(input, output) {
     }
     
     
-    # remove_outliers_fxn <- function(data){
-    #     filtered <- data %>% filter(group == "all_data")
-    #     qnt <- quantile(filtered$value, probs=c(.25, .75), na.rm=TRUE)
-    #     H <- 1.5 * IQR(filtered$value,na.rm=TRUE)
-    #     data$value[data$value < (qnt[1] - H)] <- NA
-    #     data$value[data$value > (qnt[2] + H)] <- NA
-    #     return(data)
-    # }
-    # 
-    # remove_outliers_reactive <- reactive(
-    #     if (input$remove_outliers){
-    #         plot_data <- remove_outliers_fxn(full_data)
-    #     }else{
-    #         plot_data <- full_data
-    #     }
-    #     #return(plot_data)
-    #)
+    remove_outliers_fxn <- function(data){
+        filtered <- data %>% filter(group == "all_data")
+        qnt <- quantile(filtered$value, probs=c(.25, .75), na.rm=TRUE)
+        H <- 1.5 * IQR(filtered$value,na.rm=TRUE)
+        data$value[(data$value < (qnt[1] - H)) & (data$group == "all_data")] <- NA
+        data$value[(data$value > (qnt[2] + H)) & (data$group == "all_data")] <- NA
+        return(data)
+    }
+    
+    remove_outliers_reactive <- reactive({
+        if (input$remove_outliers){
+            values$plot_data <- remove_outliers_fxn(values$filtered_data)
+        }else{
+            values$plot_data <- values$filtered_data
+        }
+    })
     
     output$plot <-renderPlotly({
-        df <- get_API_data()
-        df <- df %>% filter(variable == input$select_IQM)
-        #df <- remove_outliers_reactive()
-        do_plot(df)
+        values$df <- get_API_data()
+        values$filtered_data <- values$df %>% filter(variable == input$select_IQM)
+        remove_outliers_reactive()
+        do_plot(values$plot_data)
         #plotted=TRUE
         
     })
