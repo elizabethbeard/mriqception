@@ -1,6 +1,6 @@
 modality <- "bold"
 url_root <- 'https://mriqc.nimh.nih.gov/api/v1/'
-#filters <- '&where=bids_meta.RepetitionTime<2.5'
+filters <- '&where=bids_meta.RepetitionTime<2.5'
 url <- paste0(url_root,modality,"?max_results=50&page=1",filters,sep="")
 tmpFile <- tempfile()
 download.file(url, destfile = tmpFile, method = "curl")

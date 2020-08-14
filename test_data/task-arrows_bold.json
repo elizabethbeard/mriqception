@@ -1,0 +1,47 @@
+{
+   "TaskName": "Arrows",
+   "TaskDescription": "In an event-related design, participants were instructed to upregulate or downregulate responses to neutral or negative stimuli. The stimulus pictures were selected from the International Affective Picture System. After each picture, participants were asked to rate how successfully they had regulated their emotional response, on a scale of 1-7. The experimental paradigm was adapted from earlier work by Armita Golkar and colleagues.",
+   "CogAtlasID": "trm_557b4844ca14d",
+   "AcquisitionDuration": 1215.000448, 
+   "Columns": 128, 
+   "EchoTime": 0.034, 
+   "EchoTrainLength": 1, 
+   "FlipAngle": 80, 
+   "GEImageTypeRIMPCode": 0, 
+   "ImageType": "ORIGINAL/PRIMARY/EPI/NONE", 
+   "InplanePhaseEncodingDirection": "COL", 
+   "InversionTime": 0, 
+   "MRAcquisitionType": "2D", 
+   "MagneticFieldStrength": 3, 
+   "Manufacturer": "GE MEDICAL SYSTEMS", 
+   "ManufacturersModelName": "DISCOVERY MR750", 
+   "NumberOfAverages": 1, 
+   "NumberOfEPIShots": 1, 
+   "NumberOfEchoes": 1, 
+   "ParallelImagingReductionFactors": [
+      0.5, 
+      1
+   ], 
+   "PercentPhaseFieldOfView": 100, 
+   "PhaseEncodingDirection": "j", 
+   "PixelBandwidth": 3906.25, 
+   "ReceiveCoilName": "8HRBRAIN", 
+   "RepetitionTime": 3, 
+   "Rows": 128, 
+   "SATFatWaterBone": 1, 
+   "ScanOptions": [
+      "SAT_GEMS", 
+      "EPI_GEMS", 
+      "ACC_GEMS", 
+      "FS"
+   ], 
+   "ScanningSequence": [
+      "EP", 
+      "GR"
+   ], 
+   "SequenceVariant": "SS", 
+   "SliceThickness": 2.3, 
+   "SliceTimingComputationMethod": "SliceNumber*RepetitionTime/NumberOfSlices (interleaved ascending, odd first)", 
+   "SpacingBetweenSlices": 2.4, 
+   "dummyScans": 5
+}

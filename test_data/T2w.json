@@ -1,0 +1,49 @@
+{
+   "Columns": 512, 
+   "EchoTrainLength": 140, 
+   "FieldOfView": [
+      240.03, 
+      240.03, 
+      87.6
+   ], 
+   "FlipAngle": 90, 
+   "GEImageTypeRIMPCode": 0, 
+   "ImageType": "ORIGINAL/PRIMARY/OTHER", 
+   "InplanePhaseEncodingDirection": "ROW", 
+   "MRAcquisitionType": "3D", 
+   "MagneticFieldStrength": 3, 
+   "Manufacturer": "GE MEDICAL SYSTEMS", 
+   "ManufacturersModelName": "DISCOVERY MR750", 
+   "NumberOfAverages": 1, 
+   "NumberOfEPIShots": 1, 
+   "NumberOfEchoes": 1, 
+   "NumberOfSlices": 146, 
+   "ParallelImagingReductionFactors": [
+      0.5, 
+      0.5
+   ], 
+   "PercentPhaseFieldOfView": 100, 
+   "PhaseEncodingDirection": "i", 
+   "PixelBandwidth": 122.07, 
+   "PixelSpacing": [
+      0.4688, 
+      0.4688
+   ], 
+   "ReceiveCoilName": "8HRBRAIN", 
+   "RepetitionTime": 6, 
+   "Rows": 512, 
+   "SATFatWaterBone": 0, 
+   "ScanOptions": [
+      "EDR_GEMS", 
+      "FILTERED_GEMS", 
+      "ACC_GEMS"
+   ], 
+   "ScanningSequence": [
+      "SE", 
+      "IR"
+   ], 
+   "SequenceVariant": "SK", 
+   "SeriesDescription": "Sag CUBE T2 flair", 
+   "SliceThickness": 1.2, 
+   "SpacingBetweenSlices": 0.600002
+}

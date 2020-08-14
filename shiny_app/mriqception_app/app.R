@@ -12,7 +12,8 @@ library(reshape2)
 library(plotly)
 library(jsonlite)
 
-source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
+#source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
+source("utils.R")
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -22,7 +23,7 @@ ui <- fluidPage(
     
     sidebarLayout(
         sidebarPanel(
-            fileInput("local_file", h5("Please upload a tsv from MRIQC of your local data"), multiple = FALSE, accept = ".tsv"),
+            fileInput("local_file", h5("Please upload the output from MRIQC of your local data"), multiple = FALSE, accept = ".tsv"),
             fileInput("json_info", h5("Optionally, upload a .json file of BIDS info for your study to automatically set filter parameters close to those in your own study"), multiple = FALSE, accept = ".json"),
             
             
@@ -32,7 +33,7 @@ ui <- fluidPage(
                                         "Structural (T1W)" = 'T1w', 
                                         "T2w" = "T2w")),
             sliderInput("API_limit",
-                        label = h5("To reduce time to load data fromm the API, optionally select a maximum number of pages to load"),
+                        label = h5("To reduce time to load data from the API, optionally select a maximum number of pages to load"),
                         max = 10000,
                         min = 0,
                         value = 10000),
@@ -289,10 +290,10 @@ server <- function(input, output) {
         
         withProgress(message = 'Loading data', detail = paste("Loading page 1 of",n), value = 0, {
             for (page in seq.int(2,n)){
-                if (page %% 10 == 0){
-                    incProgress(10/n, detail = paste("Loading page", page,"of",n))
-                }
-                
+                # if (page %% 10 == 0){
+                #     incProgress(10/n, detail = paste("Loading page", page,"of",n))
+                # }
+                # 
                 url <- paste0(url_root,modality,"/?max_results=50&page=",as.character(page),filters,sep="")
                 tmpFile <- tempfile()
                 download.file(url, destfile = tmpFile, method = "curl")
@@ -301,7 +302,7 @@ server <- function(input, output) {
                 expanded_data <- merge(expanded_data, temp_expanded, all=TRUE)
             }
         })
-        API_data <- melt(expanded_data, id.vars = c("bids_name"))
+        API_data <- melt(expanded_data, id.vars = c("subject_id"))
         
         # for testing with local file
         # API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
@@ -311,11 +312,13 @@ server <- function(input, output) {
         API_data$variable <- as.character(API_data$variable)
         inFile <- input$local_file
         local_data <- read.table(inFile$datapath, header=TRUE)
-        local_data <- melt(local_data)
+        colnames(local_data)[1] <- "subject_id"
+        local_data <- melt(local_data, id.vars = c("subject_id"))
         local_data$group <- "local_set"
         full_data <- rbind(local_data,API_data)
         full_data$value <- as.numeric(full_data$value)
         values$df <- full_data
+        #browser()
     })
     
     observeEvent(input$new_upload, 

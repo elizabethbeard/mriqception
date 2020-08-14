@@ -1,4 +1,5 @@
 IQM_descriptions <- read.csv("~/Documents/Code/mriqception/shiny_app/mriqception_app/iqm_descriptions_shiny.csv")
+#IQM_descriptions <- read.csv("iqm_descriptions_shiny.csv")
 
 bold_choices <- list(
   # "SNR" = "snr", 
@@ -137,10 +138,10 @@ reorganize_bids_data <- function(temp){
         if (names(temp[[1]][[val]])[inner_val] %in% expand_list){ 
           for (double_inner in seq.int(1,length(temp[[1]][[val]][[inner_val]]))){
             fields <- c(fields, 
-                        paste0(names(temp[[1]])[val],"_",names(temp[[1]][[val]])[inner_val],"_",names(temp[[1]][[val]][[inner_val]])[double_inner]))
+                        paste0(names(temp[[1]])[val],".",names(temp[[1]][[val]])[inner_val],".",names(temp[[1]][[val]][[inner_val]])[double_inner]))
           }
         }else{
-          fields <- c(fields, paste0(names(temp[[1]])[val],"_",names(temp[[1]][[val]])[inner_val]))
+          fields <- c(fields, paste0(names(temp[[1]])[val],".",names(temp[[1]][[val]])[inner_val]))
         }
       }
     }  else{
@@ -153,7 +154,7 @@ reorganize_bids_data <- function(temp){
   
   for (sub in seq.int(length(temp))){
     for (field in seq.int(1,length(fields))){
-      split_name <- unlist(strsplit(fields[field], split = "_"))
+      split_name <- unlist(strsplit(fields[field], split = "[.]"))
       #print(split_name)
       if (length(split_name)==1){
         if (fields[field] %in% names(temp[[sub]])){
@@ -172,6 +173,7 @@ reorganize_bids_data <- function(temp){
     }
     
   }
+  colnames(expanded_data)[1] <- "subject_id"
   return(expanded_data)
 }
 

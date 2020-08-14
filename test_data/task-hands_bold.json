@@ -1,0 +1,48 @@
+{
+   "TaskName": "Hands",
+   "TaskInstructions": "",
+   "TaskDescription": "In an event-related design, participants were shown pictures of hands being stung by needles or poked with Q-tips. The stimulus set was kindly shared by Claus Lamm, and has been shown to be effective in previous work by him. After each picture, participants were asked to rate their perceived unpleasantness on a visual analog scale of 0-100.",
+   "AcquisitionDuration": 723.000256, 
+   "Columns": 128, 
+   "EchoTime": 0.034, 
+   "EchoTrainLength": 1, 
+   "FlipAngle": 80, 
+   "GEImageTypeRIMPCode": 0, 
+   "ImageType": "ORIGINAL/PRIMARY/EPI/NONE", 
+   "InplanePhaseEncodingDirection": "COL", 
+   "InversionTime": 0, 
+   "MRAcquisitionType": "2D", 
+   "MagneticFieldStrength": 3, 
+   "Manufacturer": "GE MEDICAL SYSTEMS", 
+   "ManufacturersModelName": "DISCOVERY MR750", 
+   "NumberOfAverages": 1, 
+   "NumberOfEPIShots": 1, 
+   "NumberOfEchoes": 1, 
+   "ParallelImagingReductionFactors": [
+      0.5, 
+      1
+   ], 
+   "PercentPhaseFieldOfView": 100, 
+   "PhaseEncodingDirection": "j", 
+   "PixelBandwidth": 3906.25, 
+   "ReceiveCoilName": "8HRBRAIN", 
+   "RepetitionTime": 3, 
+   "Rows": 128, 
+   "SATFatWaterBone": 1, 
+   "ScanOptions": [
+      "SAT_GEMS", 
+      "EPI_GEMS", 
+      "ACC_GEMS", 
+      "FS"
+   ], 
+   "ScanningSequence": [
+      "EP", 
+      "GR"
+   ], 
+   "SequenceVariant": "SS", 
+   "SeriesDescription": "fMRI-hands", 
+   "SliceThickness": 2.3, 
+   "SliceTimingComputationMethod": "SliceNumber*RepetitionTime/NumberOfSlices (interleaved ascending, odd first)", 
+   "SpacingBetweenSlices": 2.4, 
+   "dummyScans": 5
+}

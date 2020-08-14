@@ -1,0 +1,52 @@
+{
+   "Columns": 512, 
+   "EchoTime": 0.00281, 
+   "EchoTrainLength": 1, 
+   "FieldOfView": [
+      240.03, 
+      240.03, 
+      180
+   ], 
+   "FlipAngle": 11, 
+   "ImageType": "ORIGINAL/PRIMARY/OTHER", 
+   "InplanePhaseEncodingDirection": "ROW", 
+   "InversionTime": 0.45, 
+   "MRAcquisitionType": "3D", 
+   "MagneticFieldStrength": 3, 
+   "Manufacturer": "GE MEDICAL SYSTEMS", 
+   "ManufacturersModelName": "DISCOVERY MR750", 
+   "NumberOfAverages": 1, 
+   "NumberOfEPIShots": 0, 
+   "NumberOfEchoes": 1, 
+   "NumberOfSlices": 180, 
+   "ParallelImagingReductionFactors": [
+      0.571429, 
+      1
+   ], 
+   "PercentPhaseFieldOfView": 100, 
+   "PhaseEncodingDirection": "i", 
+   "PixelBandwidth": 122.07, 
+   "PixelSpacing": [
+      0.4688, 
+      0.4688
+   ], 
+   "ReceiveCoilName": "8HRBRAIN", 
+   "RepetitionTime": 0.0064, 
+   "Rows": 512, 
+   "SATFatWaterBone": 0, 
+   "ScanOptions": [
+      "FAST_GEMS", 
+      "EDR_GEMS", 
+      "FILTERED_GEMS", 
+      "ACC_GEMS"
+   ], 
+   "ScanningSequence": "GR", 
+   "SequenceVariant": [
+      "SS", 
+      "SK"
+   ], 
+   "SeriesDescription": "Sag3D_T1_1mm3", 
+   "SeriesNumber": 2, 
+   "SliceThickness": 1, 
+   "SpacingBetweenSlices": 1
+}
