@@ -237,8 +237,35 @@ server <- function(input, output) {
     
     get_API_data <- eventReactive(input$get_data,{
         # load in API data
+        if (is.null(input$local_file)){
+            showModal(modalDialog("Please upload a local file",
+                      title = "Upload local file",
+                      footer = tagList(
+                          actionButton("new_upload", "Continue")
+                      )))
+        }
         req(input$local_file)
-
+        # ext <- tools::file_ext(input$local_file$name)
+        # print(ext)
+        # print(ext== "tsv")
+        # if (ext != "tsv"){
+        #     validate("Please ensure your local file is a .tsv file")
+        # }
+        
+        
+        showModal(modalDialog("Are you sure you wish to pull from the API? This action will take some time, so please ensure your filters are correct.",
+                              title="Download from API", 
+                              footer = tagList(
+                                  actionButton("cancel_API","Cancel"),
+                                  actionButton("confirm_API","Yes, please download from API", class = "btn btn-danger")
+                              )))
+        
+        
+    })
+    
+    observeEvent(input$confirm_API, {
+        removeModal()
+        
         modality <- input$modality
         url_root <- 'https://mriqc.nimh.nih.gov/api/v1/'
         filters <- create_filter_text(isolate(input))
@@ -250,13 +277,15 @@ server <- function(input, output) {
         last_page_href <- temp[["_links"]][["last"]][["href"]]
         last_page_id <- strsplit(strsplit(last_page_href,split="page=")[[1]][2],split="&")[[1]][1]
         expanded_data <- reorganize_bids_data(temp[["_items"]])
-        #n <- 10  
-        if (input$API_limit > as.numeric(last_page_id)){
-            n <- as.numeric(last_page_id)
-        }else{
-            n <- input$API_limit
-        }
-        #n <- as.numeric(last_page_id)
+        
+        # if (input$API_limit > as.numeric(last_page_id)){
+        #     n <- as.numeric(last_page_id)
+        # }else{
+        #     n <- input$API_limit
+        # }
+        
+        #for testing
+        n <- 3
         
         withProgress(message = 'Loading data', detail = paste("Loading page 1 of",n), value = 0, {
             for (page in seq.int(2,n)){
@@ -273,27 +302,29 @@ server <- function(input, output) {
             }
         })
         API_data <- melt(expanded_data, id.vars = c("bids_name"))
+        
+        # for testing with local file
         # API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
         # API_data <- melt(API_data)
+        
         API_data$group <- "all_data"
         API_data$variable <- as.character(API_data$variable)
-        # ext <- tools::file_ext(input$local_file$name)
-        # switch(ext,
-        #        tsv = vroom::vroom(input$file$datapath, delim = "\t"),
-        #        validate("Invalid file; Please upload a .tsv file")
-        # )
         inFile <- input$local_file
         local_data <- read.table(inFile$datapath, header=TRUE)
         local_data <- melt(local_data)
         local_data$group <- "local_set"
         full_data <- rbind(local_data,API_data)
         full_data$value <- as.numeric(full_data$value)
-        print(filters)
-        return(full_data)
-        
-        
-        # in here, can do filtering  -- have access to input$filters
+        values$df <- full_data
     })
+    
+    observeEvent(input$new_upload, 
+                 removeModal()
+    )
+    
+    observeEvent(input$cancel_API, 
+                 removeModal()
+    )
     
     remove_outliers_reactive <- reactive({
         if (input$remove_outliers){
@@ -304,13 +335,14 @@ server <- function(input, output) {
     })
     
     output$plot <-renderPlotly({
-        values$df <- get_API_data()
+        get_API_data()
         if (input$select_IQM == ""){ 
             values$filtered_data <- values$df
         }else{
             values$filtered_data <- values$df %>% filter(variable == input$select_IQM)
         }
         remove_outliers_reactive()
+        req(values$plot_data)
         do_plot(values$plot_data)
         
     })
