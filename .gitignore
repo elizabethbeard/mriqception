@@ -125,3 +125,6 @@ dmypy.json
 .pyre/
 *.pyc
 .DS_Store
+
+# test data 
+test_data/*
