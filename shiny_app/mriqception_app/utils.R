@@ -72,7 +72,8 @@ measure_slider_inputs <- list(
   TE = list(
     min = 0, 
     max = 0.05
-  )
+  ),
+  mag_strength = character(0)
   # snr_total = list(
   #   min = 8, 
   #   max = 18
@@ -100,7 +101,7 @@ measure_slider_inputs <- list(
 )
 
 
-for (idx in seq.int(1,length(measure_slider_inputs))){
+for (idx in seq.int(1,length(measure_slider_inputs)-1)){
   measure_slider_inputs[[idx]]$value <- c(measure_slider_inputs[[idx]]$min, measure_slider_inputs[[idx]]$max)
   
 }

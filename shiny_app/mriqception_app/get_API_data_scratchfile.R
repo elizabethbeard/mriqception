@@ -21,3 +21,16 @@ for (page in seq.int(2,5)){
   expanded_data <- merge(expanded_data, temp_expanded, all=TRUE)
 }
 
+
+filepath <- "~/Documents/Code/mriqception/test_data/task-arrows_bold.json"
+json_file <- read_json(filepath, simplifyVector = TRUE)
+
+if ("EchoTime" %in% names(json_file)){ 
+  measure_slider_inputs[["TE"]][["value"]] <- c(json_file[["EchoTime"]], json_file[["EchoTime"]])
+}
+if ("RepetitionTime" %in% names(json_file)){ 
+  measure_slider_inputs[["TR"]][["value"]] <- c(json_file[["RepetitionTime"]], json_file[["RepetitionTime"]])
+}
+if ("MagneticFieldStrength" %in% names(json_file)){
+  measure_slider_inputs[["mag_strength"]] <- json_file[["MagneticFieldStrength"]]
+}

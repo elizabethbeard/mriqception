@@ -12,8 +12,8 @@ library(reshape2)
 library(plotly)
 library(jsonlite)
 
-#source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
-source("utils.R")
+source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
+#source("utils.R", local=TRUE)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -23,10 +23,17 @@ ui <- fluidPage(
     
     sidebarLayout(
         sidebarPanel(
-            fileInput("local_file", h5("Please upload the output from MRIQC of your local data"), multiple = FALSE, accept = ".tsv"),
-            fileInput("json_info", h5("Optionally, upload a .json file of BIDS info for your study to automatically set filter parameters close to those in your own study"), multiple = FALSE, accept = ".json"),
-            
-            
+            fileInput("local_file", h5("Please upload the output from MRIQC of your local data"), 
+                      multiple = FALSE, 
+                      accept = c(".tsv",
+                                 "text/tsv", 
+                                 "text/tab-separated-values,text/plain",
+                                 ".csv",
+                                 "text/csv", 
+                                 "text/comma-separated-values,text/plain")),
+            fileInput("json_info", h5("Optionally, upload a .json file of BIDS info for your study to automatically set filter parameters close to those in your own study"), 
+                      multiple = FALSE, 
+                      accept = ".json"),
             radioButtons("modality", 
                          h5("Please choose the modality you are interested in"),
                          choices = list("BOLD"='bold',
@@ -111,7 +118,7 @@ ui <- fluidPage(
                                  "3T"="3",
                                  "7T" = "7"
                              ),
-                             selected = character(0))
+                             selected = measure_slider_inputs[["mag_strength"]])
             ),
             
             
@@ -133,7 +140,7 @@ ui <- fluidPage(
     )
 )
 
-server <- function(input, output) {
+server <- function(input, output,session) {
     values <- reactiveValues(plotted=FALSE)
     
     do_plot <- function(df){ 
@@ -240,10 +247,10 @@ server <- function(input, output) {
         # load in API data
         if (is.null(input$local_file)){
             showModal(modalDialog("Please upload a local file",
-                      title = "Upload local file",
-                      footer = tagList(
-                          actionButton("new_upload", "Continue")
-                      )))
+                                  title = "Upload local file",
+                                  footer = tagList(
+                                      actionButton("new_upload", "Continue")
+                                  )))
         }
         req(input$local_file)
         # ext <- tools::file_ext(input$local_file$name)
@@ -311,14 +318,35 @@ server <- function(input, output) {
         API_data$group <- "all_data"
         API_data$variable <- as.character(API_data$variable)
         inFile <- input$local_file
-        local_data <- read.table(inFile$datapath, header=TRUE)
+        ext <- tools::file_ext(input$local_file$name)
+        if (ext == "tsv"){
+            local_data <- read.table(inFile$datapath, header=TRUE)
+        }else{
+            local_data <- read.csv(inFile$datapath, header=TRUE)
+        }
         colnames(local_data)[1] <- "subject_id"
         local_data <- melt(local_data, id.vars = c("subject_id"))
         local_data$group <- "local_set"
         full_data <- rbind(local_data,API_data)
         full_data$value <- as.numeric(full_data$value)
         values$df <- full_data
-        #browser()
+    })
+    
+    observeEvent(input$json_info, {
+        req(input$json_info)
+        filepath <- input$json_info$datapath 
+        json_file <- read_json(filepath, simplifyVector = TRUE)
+        
+        if ("EchoTime" %in% names(json_file)){ 
+            updateSliderInput(session, "TE", value = c(json_file[["EchoTime"]], json_file[["EchoTime"]]))
+        }
+        if ("RepetitionTime" %in% names(json_file)){ 
+            updateSliderInput(session, "TR", value = c(json_file[["RepetitionTime"]], json_file[["RepetitionTime"]]))
+        }
+        if ("MagneticFieldStrength" %in% names(json_file)){
+            updateRadioButtons(session, "mag_strength", selected = json_file[["MagneticFieldStrength"]])
+        }
+        
     })
     
     observeEvent(input$new_upload, 
