@@ -31,6 +31,11 @@ ui <- fluidPage(
                          choices = list("BOLD"='bold',
                                         "Structural (T1W)" = 'T1w', 
                                         "T2w" = "T2w")),
+            sliderInput("API_limit",
+                        label = h5("To reduce time to load data fromm the API, optionally select a maximum number of pages to load"),
+                        max = 10000,
+                        min = 0,
+                        value = 10000),
             checkboxInput("remove_outliers", "Remove outliers from API", value=FALSE),
             uiOutput("choose_filters"),
             # just BOLD filters
@@ -245,7 +250,12 @@ server <- function(input, output) {
         last_page_href <- temp[["_links"]][["last"]][["href"]]
         last_page_id <- strsplit(strsplit(last_page_href,split="page=")[[1]][2],split="&")[[1]][1]
         expanded_data <- reorganize_bids_data(temp[["_items"]])
-        n <- 10    
+        #n <- 10  
+        if (input$API_limit > as.numeric(last_page_id)){
+            n <- as.numeric(last_page_id)
+        }else{
+            n <- input$API_limit
+        }
         #n <- as.numeric(last_page_id)
         
         withProgress(message = 'Loading data', detail = paste("Loading page 1 of",n), value = 0, {

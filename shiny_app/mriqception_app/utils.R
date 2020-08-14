@@ -181,31 +181,32 @@ create_filter_text <- function(input){
   #' @return string containing filter string for querying API 
   #' 
   #' Written by C.Walsh on 8/13/2020
-
+  
   
   filter_map <- list(
     "bids_meta.EchoTime" = "TE", 
     "bids_meta.RepetitionTime" = "TR",
     "bids_meta.MagneticFieldStrength"= "mag_strength"
   )
-
-  if (length(input$filters) == 0){
+  
+  if (is.null(input$filters)){
     filters <- ""
   }else{
     filters <- "&where="
-  }
-  for (filter in seq.int(1, length(input$filters))){
-    if (input$filters[filter] != "bids_meta.MagneticFieldStrength"){
-      filters <- paste0(filters,input$filters[filter],">=",input[[filter_map[[input$filters[filter]]]]][1],"&",
-                        input$filters[filter],"<=",input[[filter_map[[input$filters[filter]]]]][2], sep="")
+    
+    for (filter in seq.int(1, length(input$filters))){
+      if (input$filters[filter] != "bids_meta.MagneticFieldStrength"){
+        filters <- paste0(filters,input$filters[filter],">=",input[[filter_map[[input$filters[filter]]]]][1],"&",
+                          input$filters[filter],"<=",input[[filter_map[[input$filters[filter]]]]][2], sep="")
+      }
+      if (filter < length(input$filters)){
+        filters <- paste0(filters,"&", sep="")
+      }
     }
-    if (filter < length(input$filters)){
-      filters <- paste0(filters,"&", sep="")
+    
+    if ("bids_meta.MagneticFieldStrength" %in% input$filters){
+      filters <- paste0(filters,"&bids_meta.MagneticFieldStrength==",input$mag_strength)
     }
-  }
-  
-  if ("bids_meta.MagneticFieldStrength" %in% input$filters){
-    filters <- paste0(filters,"&bids_meta.MagneticFieldStrength==",input$mag_strength)
   }
   return(filters)
 }
