@@ -231,15 +231,14 @@ server <- function(input, output,session) {
     })
     
     output$select_IQM_render <- renderUI({
-        if (input$modality == "bold"){
-            choices_list <- bold_choices
-        }else if (input$modality == "T1w"){
-            choices_list <- T1w_choices
-        }else if (input$modality == "T2w"){
-            choices_list <- T2w_choices
-        }
+        req(values$df)
+        choices_API <- unique(values$df %>% filter(group == "all_data") %>% select("variable"))
+        choices_local <- unique(values$df %>% filter(group == "local_set") %>% select("variable"))
+        choices_overlap <- intersect(choices_API$variable, choices_local$variable)
+        choices_overlap <- choices_overlap[order(choices_overlap)]
+
         selectInput("select_IQM", h6("Please select IQM"), 
-                    choices=unique(values$df$variable)
+                    choices=choices_overlap
         )
     })
     
@@ -253,13 +252,7 @@ server <- function(input, output,session) {
                                   )))
         }
         req(input$local_file)
-        # ext <- tools::file_ext(input$local_file$name)
-        # print(ext)
-        # print(ext== "tsv")
-        # if (ext != "tsv"){
-        #     validate("Please ensure your local file is a .tsv file")
-        # }
-        
+
         
         showModal(modalDialog("Are you sure you wish to pull from the API? This action will take some time, so please ensure your filters are correct.",
                               title="Download from API", 
