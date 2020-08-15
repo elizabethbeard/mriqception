@@ -12,8 +12,10 @@ library(reshape2)
 library(plotly)
 library(jsonlite)
 
-source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
-#source("utils.R", local=TRUE)
+`%notin%` <- Negate(`%in%`)
+
+#source("~/Documents/Code/mriqception/shiny_app/mriqception_app/utils.R")
+source("utils.R", local=TRUE)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -119,6 +121,16 @@ ui <- fluidPage(
                                  "7T" = "7"
                              ),
                              selected = measure_slider_inputs[["mag_strength"]])
+            ),
+            conditionalPanel(
+                condition = "input.filters.includes('bids_meta.Manufacturer')",
+                radioButtons("manufacturer", 
+                             h5("Please choose a scanner manufacturer"),
+                             choices = list(
+                                 "Siemens"= "Siemens",
+                                 "GE"="GE"
+                             ),
+                             selected = measure_slider_inputs[["scanner_manufacturer"]])
             ),
             
             
@@ -236,7 +248,8 @@ server <- function(input, output,session) {
         choices_local <- unique(values$df %>% filter(group == "local_set") %>% select("variable"))
         choices_overlap <- intersect(choices_API$variable, choices_local$variable)
         choices_overlap <- choices_overlap[order(choices_overlap)]
-
+        choices_overlap <-choices_overlap[choices_overlap %notin% c("size_x", "size_y", "size_z", "size_t", "spacing_x", "spacing_y", "spacing_z", "spacing_tr")]
+        
         selectInput("select_IQM", h6("Please select IQM"), 
                     choices=choices_overlap
         )
@@ -252,9 +265,16 @@ server <- function(input, output,session) {
                                   )))
         }
         req(input$local_file)
-
         
-        showModal(modalDialog("Are you sure you wish to pull from the API? This action will take some time, so please ensure your filters are correct.",
+        if (!is.null(current_selection$filters)){
+            modal_text <- paste0("Are you sure you wish to pull from the API? You are currently filtering ", input$modality, " data based on ",paste(current_selection$filters, sep = "", collapse = ", ")," and ", as.character(input$API_limit), " pages. This action will take some time, so please ensure your filters are correct.")
+            
+        }else{
+            modal_text <- paste0("Are you sure you wish to pull from the API? You are currently pulling ", input$modality," data from ", as.character(input$API_limit), " pages. This action will take some time, so please ensure your filters are correct.")
+            
+        }
+        
+        showModal(modalDialog(modal_text,
                               title="Download from API", 
                               footer = tagList(
                                   actionButton("cancel_API","Cancel"),
@@ -269,7 +289,7 @@ server <- function(input, output,session) {
         
         modality <- input$modality
         url_root <- 'https://mriqc.nimh.nih.gov/api/v1/'
-        filters <- create_filter_text(isolate(input))
+        filters <- create_filter_text(isolate(input), isolate(current_selection$filters))
         url <- paste0(url_root,modality,"?max_results=50&page=1",filters,sep="")
         tmpFile <- tempfile()
         download.file(url, destfile = tmpFile, method = "curl")
@@ -290,10 +310,10 @@ server <- function(input, output,session) {
         
         withProgress(message = 'Loading data', detail = paste("Loading page 1 of",n), value = 0, {
             for (page in seq.int(2,n)){
-                # if (page %% 10 == 0){
-                #     incProgress(10/n, detail = paste("Loading page", page,"of",n))
-                # }
-                # 
+                if (page %% 10 == 0){
+                    incProgress(10/n, detail = paste("Loading page", page,"of",n))
+                }
+
                 url <- paste0(url_root,modality,"/?max_results=50&page=",as.character(page),filters,sep="")
                 tmpFile <- tempfile()
                 download.file(url, destfile = tmpFile, method = "curl")
@@ -303,10 +323,6 @@ server <- function(input, output,session) {
             }
         })
         API_data <- melt(expanded_data, id.vars = c("subject_id"))
-        
-        # for testing with local file
-        # API_data <- read.table(paste('../../test_data/group_',input$modality,'.tsv', sep=""),header=TRUE)
-        # API_data <- melt(API_data)
         
         API_data$group <- "all_data"
         API_data$variable <- as.character(API_data$variable)
@@ -325,21 +341,40 @@ server <- function(input, output,session) {
         values$df <- full_data
     })
     
+    current_selection <- reactiveValues()
+    
+    observeEvent(input$filters,{
+        current_selection$filters <- input$filters
+    })
+    
     observeEvent(input$json_info, {
         req(input$json_info)
         filepath <- input$json_info$datapath 
         json_file <- read_json(filepath, simplifyVector = TRUE)
-        
         if ("EchoTime" %in% names(json_file)){ 
             updateSliderInput(session, "TE", value = c(json_file[["EchoTime"]], json_file[["EchoTime"]]))
+            updateCheckboxGroupInput(session, "filters", selected = c(current_selection$filters, "bids_meta.EchoTime"))
+            current_selection$filters <- c(current_selection$filters, "bids_meta.EchoTime")
         }
         if ("RepetitionTime" %in% names(json_file)){ 
             updateSliderInput(session, "TR", value = c(json_file[["RepetitionTime"]], json_file[["RepetitionTime"]]))
+            updateCheckboxGroupInput(session, "filters", selected = c(current_selection$filters, "bids_meta.RepetitionTime"))
+            current_selection$filters <- c(current_selection$filters, "bids_meta.RepetitionTime")
         }
         if ("MagneticFieldStrength" %in% names(json_file)){
             updateRadioButtons(session, "mag_strength", selected = json_file[["MagneticFieldStrength"]])
+            updateCheckboxGroupInput(session, "filters", selected = c(current_selection$filters, "bids_meta.MagneticFieldStrength"))
+            current_selection$filters <- c(current_selection$filters, "bids_meta.MagneticFieldStrength")
         }
-        
+        if ("Manufacturer" %in% names(json_file)){
+            if (grepl("GE", json_file[["Manufacturer"]], ignore.case = TRUE)){
+                updateRadioButtons(session, "manufacturer", selected = "GE")
+            }else if(grepl("Siemens", json_file[["Manufacturer"]], ignore.case = TRUE)){
+                updateRadioButtons(session, "manufacturer", selected = "Siemens")
+            }
+            updateCheckboxGroupInput(session, "filters", selected = c(current_selection$filters, "bids_meta.Manufacturer"))
+            current_selection$filters <- c(current_selection$filters, "bids_meta.Manufacturer")
+        }
     })
     
     observeEvent(input$new_upload, 

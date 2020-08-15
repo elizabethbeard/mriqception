@@ -38,17 +38,10 @@ gsr_x,"Ghost-to-signal ratio along the x or y encoding axes.
 Higher values indicate lower quality.",func,other,#9932CC
 gsr_y,"Ghost-to-signal ratio along the x or y encoding axes.
 Higher values indicate lower quality.",func,other,#9932CC
-icvs_csf,"
-Intracranial volume fraction in CSF.<br>
-Values should move within a normative range.",anat,descriptive,#00008B
-icvs_gm,"
-Intracranial volume fraction in grey matter.<br>
-Values should move within a normative range.",anat,descriptive,#00008B
-icvs_wm,"
-Intracranial volume fraction in white matter.<br>
-Values should move within a normative range.",anat,descriptive,#00008B
-inu_med,"Intensity non-uniformity (bias field) median.
-Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact,#6495ED
+icvs_csf,Intracranial volume fraction in CSF.Values should move within a normative range.,anat,descriptive,#00008B
+icvs_gm,Intracranial volume fraction in grey matter. Values should move within a normative range.,anat,descriptive,#00008B
+icvs_wm,Intracranial volume fraction in white matter. Values should move within a normative range.,anat,descriptive,#00008B
+inu_med,Intensity non-uniformity (bias field) median. Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.,anat,artifact,#6495ED
 inu_range,"Intensity non-uniformity (bias field) range.
 Values closer to 1 indicate higher quality; further from zero indicate greater RF field inhomogeneity.",anat,artifact,#6495ED
 qi_1,"Mortamet's quality index 1. The proportion of voxels outside the brain with artifacts to the total number of voxels outside the brain.
